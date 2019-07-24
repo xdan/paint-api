@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+				content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Paint API</title>
+
+	<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+	<div id="root"></div>
+</body>
+<script src="../dist/index.js"></script>
+<script>
+	const api = new PaintApi();
+	let i = 0, image = new Image();
+	image.src = './mario.png';
+
+	setTimeout(() => {
+		api.state.layers = [];
+		api.state.layers.push(new PaintApi.Layer([
+			new PaintApi.Bitmap(image, i + 1, i + 1, i + 100, i + 100),
+			new PaintApi.Circle(i + 100, i + 100, i + 10),
+			new PaintApi.Rectangle(i, i, i + 10, i + 10),
+			new PaintApi.Polyline([
+				[110 + i, 20 + i],
+				[120, 50 + i],
+				[140 + i, 60 + i],
+				[170 + i, 90 + i],
+				[110 + i, 50 + i],
+			]),
+		]));
+		i += 1;
+	}, 10);
+
+	api.bind(document.getElementById('root'));
+</script>
+</html>

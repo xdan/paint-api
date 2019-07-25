@@ -116,7 +116,91 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\nvar render_1 = __webpack_require__(/*! ./render */ \"./src/core/render.ts\");\nvar object_1 = __webpack_require__(/*! ./observe/object */ \"./src/core/observe/object.ts\");\nvar eventer_1 = __webpack_require__(/*! ./observe/eventer */ \"./src/core/observe/eventer.ts\");\nvar Api = /** @class */ (function () {\n    function Api(options) {\n        var _this = this;\n        this.events = new eventer_1.Eventer(this);\n        this.state = {\n            layers: [],\n            width: 400,\n            height: 400,\n            behaviours: {\n                selectShapeOnMouseEnter: true,\n            },\n            cursor: {\n                x: 0,\n                y: 0,\n                draw: false\n            }\n        };\n        this.state = object_1.ObserveObject.create(tslib_1.__assign({}, this.state, options), this.draw.bind(this));\n        this.render = render_1.Render.create(this.state.width, this.state.height);\n        this.events.on('mousemove', function (e) {\n            _this.state.cursor.x = e.x;\n            _this.state.cursor.y = e.y;\n        });\n        this.draw();\n    }\n    Api.prototype.bind = function (root) {\n        var _this = this;\n        var container = this.render.getContainer();\n        if (container) {\n            root.appendChild(container);\n        }\n        else {\n            throw new Error('Render has not HTML connector');\n        }\n        container.addEventListener('mousemove', function (e) {\n            var rect = container.getBoundingClientRect();\n            _this.events.fire('mousemove', {\n                x: e.clientX - rect.left,\n                y: e.clientY - rect.top,\n            });\n        });\n    };\n    Api.prototype.draw = function () {\n        var _this = this;\n        this.render.clear();\n        var _a = this.state, width = _a.width, height = _a.height, layers = _a.layers, cursor = _a.cursor, selectShapeOnMouseEnter = this.state.behaviours.selectShapeOnMouseEnter, drawOptions = {\n            drawBoundIfInPoint: selectShapeOnMouseEnter,\n            cursor: cursor\n        };\n        this.render.setSize(width, height);\n        layers.forEach(function (layer) {\n            layer.draw(_this.render, drawOptions);\n        });\n        if (cursor.draw) {\n            this.render.drawCursor(cursor);\n        }\n    };\n    return Api;\n}());\nexports.Api = Api;\n\n\n//# sourceURL=webpack:///./src/core/api.ts?");
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\nvar render_1 = __webpack_require__(/*! ./render */ \"./src/core/render.ts\");\nvar object_1 = __webpack_require__(/*! ./observe/object */ \"./src/core/observe/object.ts\");\nvar eventer_1 = __webpack_require__(/*! ./observe/eventer */ \"./src/core/observe/eventer.ts\");\nvar Api = /** @class */ (function () {\n    function Api(options) {\n        var _this = this;\n        this.events = new eventer_1.Eventer(this);\n        this.state = {\n            layers: [],\n            width: 400,\n            height: 400,\n            behaviours: {\n                selectShapeOnMouseEnter: true,\n            },\n            cursor: {\n                x: 0,\n                y: 0,\n                draw: true\n            }\n        };\n        this.state = object_1.ObserveObject.create(tslib_1.__assign({}, this.state, options), this.draw.bind(this));\n        this.render = render_1.Render.create(this.state.width, this.state.height);\n        this.events.on('mousemove', function (e) {\n            _this.state.cursor.x = e.x;\n            _this.state.cursor.y = e.y;\n        });\n        this.draw();\n    }\n    Api.prototype.bind = function (root) {\n        var _this = this;\n        var container = this.render.getContainer();\n        if (container) {\n            root.appendChild(container);\n        }\n        else {\n            throw new Error('Render has not HTML connector');\n        }\n        container.addEventListener('mousemove', function (e) {\n            var rect = container.getBoundingClientRect();\n            _this.events.fire('mousemove', {\n                x: e.clientX - rect.left,\n                y: e.clientY - rect.top,\n            });\n        });\n    };\n    Api.prototype.draw = function () {\n        var _this = this;\n        this.render.clear();\n        var _a = this.state, width = _a.width, height = _a.height, layers = _a.layers, cursor = _a.cursor, selectShapeOnMouseEnter = this.state.behaviours.selectShapeOnMouseEnter, drawOptions = {\n            drawBoundIfInPoint: selectShapeOnMouseEnter,\n            cursor: cursor\n        };\n        this.render.setSize(width, height);\n        layers.forEach(function (layer) {\n            layer.draw(_this.render, drawOptions);\n        });\n        if (cursor.draw) {\n            this.render.drawCursor(cursor);\n        }\n    };\n    Api.Shapes = {};\n    Api.Geometries = {};\n    Api.Transforms = {};\n    return Api;\n}());\nexports.Api = Api;\n\n\n//# sourceURL=webpack:///./src/core/api.ts?");
+
+/***/ }),
+
+/***/ "./src/core/geometries/bound.ts":
+/*!**************************************!*\
+  !*** ./src/core/geometries/bound.ts ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\nvar geometry_1 = __webpack_require__(/*! ../geometry */ \"./src/core/geometry.ts\");\nvar Bound = /** @class */ (function (_super) {\n    tslib_1.__extends(Bound, _super);\n    function Bound(x, y, w, h) {\n        var _this = _super.call(this) || this;\n        _this.x = x;\n        _this.y = y;\n        _this.w = w;\n        _this.h = h;\n        return _this;\n    }\n    Object.defineProperty(Bound.prototype, \"bound\", {\n        get: function () {\n            return this;\n        },\n        enumerable: true,\n        configurable: true\n    });\n    return Bound;\n}(geometry_1.Geometry));\nexports.Bound = Bound;\n\n\n//# sourceURL=webpack:///./src/core/geometries/bound.ts?");
+
+/***/ }),
+
+/***/ "./src/core/geometries/index.ts":
+/*!**************************************!*\
+  !*** ./src/core/geometries/index.ts ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\ntslib_1.__exportStar(__webpack_require__(/*! ./bound */ \"./src/core/geometries/bound.ts\"), exports);\ntslib_1.__exportStar(__webpack_require__(/*! ./multipoint */ \"./src/core/geometries/multipoint.ts\"), exports);\ntslib_1.__exportStar(__webpack_require__(/*! ./point */ \"./src/core/geometries/point.ts\"), exports);\ntslib_1.__exportStar(__webpack_require__(/*! ./round */ \"./src/core/geometries/round.ts\"), exports);\n\n\n//# sourceURL=webpack:///./src/core/geometries/index.ts?");
+
+/***/ }),
+
+/***/ "./src/core/geometries/multipoint.ts":
+/*!*******************************************!*\
+  !*** ./src/core/geometries/multipoint.ts ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\nvar point_1 = __webpack_require__(/*! ./point */ \"./src/core/geometries/point.ts\");\nvar getBoundByMultiline_1 = __webpack_require__(/*! ../helpers/getBoundByMultiline */ \"./src/core/helpers/getBoundByMultiline.ts\");\nvar Multipoint = /** @class */ (function (_super) {\n    tslib_1.__extends(Multipoint, _super);\n    function Multipoint(points) {\n        var _this = _super.call(this) || this;\n        if (points) {\n            points.forEach(function (point) {\n                _this.push(point instanceof point_1.Point ? point : new point_1.Point(point));\n            });\n        }\n        Object.setPrototypeOf(_this, Object.create(Multipoint.prototype));\n        return _this;\n    }\n    Object.defineProperty(Multipoint.prototype, \"bound\", {\n        get: function () {\n            return getBoundByMultiline_1.getBoundByMultiline(this);\n        },\n        enumerable: true,\n        configurable: true\n    });\n    return Multipoint;\n}(Array));\nexports.Multipoint = Multipoint;\n\n\n//# sourceURL=webpack:///./src/core/geometries/multipoint.ts?");
+
+/***/ }),
+
+/***/ "./src/core/geometries/point.ts":
+/*!**************************************!*\
+  !*** ./src/core/geometries/point.ts ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\nvar geometry_1 = __webpack_require__(/*! ../geometry */ \"./src/core/geometry.ts\");\nvar Point = /** @class */ (function (_super) {\n    tslib_1.__extends(Point, _super);\n    function Point(x, y) {\n        var _this = _super.call(this) || this;\n        if (typeof x === 'number') {\n            _this.x = x;\n            _this.y = y || 0;\n        }\n        else if (Array.isArray(x)) {\n            _this.x = x[0];\n            _this.y = x[1];\n        }\n        else {\n            _this.x = x.x;\n            _this.y = x.y;\n        }\n        return _this;\n    }\n    Object.defineProperty(Point.prototype, \"bound\", {\n        get: function () {\n            return {\n                x: this.x,\n                y: this.y,\n                w: 1,\n                h: 1\n            };\n        },\n        enumerable: true,\n        configurable: true\n    });\n    return Point;\n}(geometry_1.Geometry));\nexports.Point = Point;\n\n\n//# sourceURL=webpack:///./src/core/geometries/point.ts?");
+
+/***/ }),
+
+/***/ "./src/core/geometries/round.ts":
+/*!**************************************!*\
+  !*** ./src/core/geometries/round.ts ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\nvar geometry_1 = __webpack_require__(/*! ../geometry */ \"./src/core/geometry.ts\");\nvar Round = /** @class */ (function (_super) {\n    tslib_1.__extends(Round, _super);\n    function Round(x, y, r) {\n        var _this = _super.call(this) || this;\n        _this.x = x;\n        _this.y = y;\n        _this.r = r;\n        return _this;\n    }\n    Object.defineProperty(Round.prototype, \"bound\", {\n        get: function () {\n            return {\n                x: this.x - this.r,\n                y: this.y - this.r,\n                w: this.r * 2,\n                h: this.r * 2\n            };\n        },\n        enumerable: true,\n        configurable: true\n    });\n    return Round;\n}(geometry_1.Geometry));\nexports.Round = Round;\n\n\n//# sourceURL=webpack:///./src/core/geometries/round.ts?");
+
+/***/ }),
+
+/***/ "./src/core/geometry.ts":
+/*!******************************!*\
+  !*** ./src/core/geometry.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar Geometry = /** @class */ (function () {\n    function Geometry() {\n    }\n    return Geometry;\n}());\nexports.Geometry = Geometry;\n\n\n//# sourceURL=webpack:///./src/core/geometry.ts?");
+
+/***/ }),
+
+/***/ "./src/core/helpers/getBoundByMultiline.ts":
+/*!*************************************************!*\
+  !*** ./src/core/helpers/getBoundByMultiline.ts ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nfunction getBoundByMultiline(points) {\n    if (points.length < 2) {\n        throw new Error('Need at least two points');\n    }\n    var bnd = {\n        x1: Infinity,\n        x2: -Infinity,\n        y1: Infinity,\n        y2: -Infinity,\n    };\n    points.forEach(function (point) {\n        bnd.x1 = Math.min(point.x, bnd.x1);\n        bnd.y1 = Math.min(point.y, bnd.y1);\n        bnd.x2 = Math.max(point.x, bnd.x2);\n        bnd.y2 = Math.max(point.y, bnd.y2);\n    });\n    return {\n        x: bnd.x1,\n        y: bnd.y1,\n        w: bnd.x2 - bnd.x1,\n        h: bnd.y2 - bnd.y1\n    };\n}\nexports.getBoundByMultiline = getBoundByMultiline;\n\n\n//# sourceURL=webpack:///./src/core/helpers/getBoundByMultiline.ts?");
 
 /***/ }),
 
@@ -200,7 +284,7 @@ eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar is
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar Render = /** @class */ (function () {\n    function Render(width, height) {\n        if (width === void 0) { width = 400; }\n        if (height === void 0) { height = 400; }\n        this.container = null;\n        this.state = {\n            width: 0,\n            height: 0,\n        };\n        this.makeCanvas(width, height);\n    }\n    Render.prototype.getContainer = function () {\n        return this.container;\n    };\n    Render.create = function (width, height) {\n        return new Render(width, height);\n    };\n    Render.prototype.makeCanvas = function (width, height) {\n        var canvas = document.createElement(\"canvas\");\n        if (!canvas) {\n            throw new Error('Canvas was not created');\n        }\n        var ctx = canvas.getContext(\"2d\");\n        if (!ctx) {\n            throw new Error('Canvas context was not created');\n        }\n        this.context = ctx;\n        this.container = canvas;\n        this.setSize(width, height);\n    };\n    Render.prototype.changeSize = function (width, height) {\n        if (!this.container) {\n            return;\n        }\n        this.context.canvas.width = width;\n        this.context.canvas.height = height;\n        this.container.style.width = width + 'px';\n        this.container.style.height = height + 'px';\n    };\n    Render.prototype.setSize = function (width, height) {\n        if (width !== this.state.width || height !== this.state.height) {\n            this.changeSize(width, height);\n            this.state.width = width;\n            this.state.height = height;\n        }\n    };\n    Render.prototype.clear = function () {\n        this.context.clearRect(0, 0, this.state.width, this.state.height);\n    };\n    Render.prototype.drawImage = function (image, bound) {\n        this.context.drawImage(image, bound.x, bound.y, bound.w, bound.h);\n    };\n    Render.prototype.drawCircle = function (x, y, r) {\n        this.context.beginPath();\n        this.context.arc(x, y, r, 0, 2 * Math.PI);\n        this.context.stroke();\n    };\n    Render.prototype.drawPolyline = function (points) {\n        var _this = this;\n        this.context.beginPath();\n        this.context.setLineDash([2, 2]);\n        points.forEach(function (_a, index) {\n            var x = _a.x, y = _a.y;\n            if (!index) {\n                _this.context.moveTo(x, y);\n            }\n            _this.context.lineTo(x, y);\n        });\n        this.context.stroke();\n        this.context.setLineDash([]);\n    };\n    Render.prototype.drawRectangle = function (bound, fill) {\n        if (fill) {\n            this.context.fillRect(bound.x, bound.y, bound.w, bound.h);\n        }\n        else {\n            this.context.rect(bound.x, bound.y, bound.w, bound.h);\n            this.context.stroke();\n        }\n    };\n    Render.prototype.drawCursor = function (_a) {\n        var x = _a.x, y = _a.y;\n        this.context.beginPath();\n        this.context.setLineDash([2, 2]);\n        this.context.moveTo(x, y - 5);\n        this.context.lineTo(x, y - 5);\n        this.context.lineTo(x, y + 5);\n        this.context.moveTo(x - 5, y);\n        this.context.lineTo(x - 5, y);\n        this.context.lineTo(x + 5, y);\n        this.context.stroke();\n        this.context.setLineDash([]);\n    };\n    return Render;\n}());\nexports.Render = Render;\n\n\n//# sourceURL=webpack:///./src/core/render.ts?");
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar Render = /** @class */ (function () {\n    function Render(width, height) {\n        if (width === void 0) { width = 400; }\n        if (height === void 0) { height = 400; }\n        this.container = null;\n        this.state = {\n            width: 0,\n            height: 0,\n        };\n        this.makeCanvas(width, height);\n    }\n    Render.prototype.getContainer = function () {\n        return this.container;\n    };\n    Render.create = function (width, height) {\n        return new Render(width, height);\n    };\n    Render.prototype.makeCanvas = function (width, height) {\n        var canvas = document.createElement(\"canvas\");\n        if (!canvas) {\n            throw new Error('Canvas was not created');\n        }\n        var ctx = canvas.getContext(\"2d\");\n        if (!ctx) {\n            throw new Error('Canvas context was not created');\n        }\n        this.context = ctx;\n        this.container = canvas;\n        this.setSize(width, height);\n    };\n    Render.prototype.changeSize = function (width, height) {\n        if (!this.container) {\n            return;\n        }\n        this.context.canvas.width = width;\n        this.context.canvas.height = height;\n        this.container.style.width = width + 'px';\n        this.container.style.height = height + 'px';\n    };\n    Render.prototype.setSize = function (width, height) {\n        if (width !== this.state.width || height !== this.state.height) {\n            this.changeSize(width, height);\n            this.state.width = width;\n            this.state.height = height;\n        }\n    };\n    Render.prototype.clear = function () {\n        this.context.clearRect(0, 0, this.state.width, this.state.height);\n    };\n    Render.prototype.drawImage = function (image, bound) {\n        this.context.drawImage(image, bound.x, bound.y, bound.w, bound.h);\n    };\n    Render.prototype.drawCircle = function (round) {\n        this.context.beginPath();\n        this.context.arc(round.x, round.y, round.r, 0, 2 * Math.PI);\n        this.context.stroke();\n    };\n    Render.prototype.drawPolyline = function (points) {\n        var _this = this;\n        this.context.beginPath();\n        this.context.setLineDash([2, 2]);\n        points.forEach(function (_a, index) {\n            var x = _a.x, y = _a.y;\n            if (!index) {\n                _this.context.moveTo(x, y);\n            }\n            _this.context.lineTo(x, y);\n        });\n        this.context.stroke();\n        this.context.setLineDash([]);\n    };\n    Render.prototype.drawRectangle = function (bound, fill) {\n        if (fill) {\n            this.context.fillRect(bound.x, bound.y, bound.w, bound.h);\n        }\n        else {\n            this.context.rect(bound.x, bound.y, bound.w, bound.h);\n            this.context.stroke();\n        }\n    };\n    Render.prototype.drawCursor = function (_a) {\n        var x = _a.x, y = _a.y;\n        this.context.beginPath();\n        this.context.setLineDash([2, 2]);\n        this.context.moveTo(x, y - 5);\n        this.context.lineTo(x, y - 5);\n        this.context.lineTo(x, y + 5);\n        this.context.moveTo(x - 5, y);\n        this.context.lineTo(x - 5, y);\n        this.context.lineTo(x + 5, y);\n        this.context.stroke();\n        this.context.setLineDash([]);\n    };\n    return Render;\n}());\nexports.Render = Render;\n\n\n//# sourceURL=webpack:///./src/core/render.ts?");
 
 /***/ }),
 
@@ -212,7 +296,43 @@ eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar Re
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\nvar layer_1 = __webpack_require__(/*! ./layer */ \"./src/core/layer.ts\");\nvar isPointInBound_1 = __webpack_require__(/*! ./helpers/isPointInBound */ \"./src/core/helpers/isPointInBound.ts\");\nvar Shape = /** @class */ (function (_super) {\n    tslib_1.__extends(Shape, _super);\n    function Shape() {\n        return _super !== null && _super.apply(this, arguments) || this;\n    }\n    Shape.prototype.draw = function (render, opt) {\n        this.drawGeometry(render, opt);\n        if (opt.drawBoundIfInPoint) {\n            var bound = this.bound;\n            console.log(this.constructor.name, bound);\n            if (isPointInBound_1.isPointInBound(opt.cursor, bound)) {\n                render.drawRectangle(bound, false);\n            }\n        }\n        _super.prototype.draw.call(this, render, opt);\n    };\n    return Shape;\n}(layer_1.Layer));\nexports.Shape = Shape;\n\n\n//# sourceURL=webpack:///./src/core/shape.ts?");
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\nvar layer_1 = __webpack_require__(/*! ./layer */ \"./src/core/layer.ts\");\nvar isPointInBound_1 = __webpack_require__(/*! ./helpers/isPointInBound */ \"./src/core/helpers/isPointInBound.ts\");\nvar transform_1 = __webpack_require__(/*! ./transform */ \"./src/core/transform.ts\");\nvar Shape = /** @class */ (function (_super) {\n    tslib_1.__extends(Shape, _super);\n    function Shape() {\n        var _this = _super !== null && _super.apply(this, arguments) || this;\n        _this.transforms = [];\n        return _this;\n    }\n    Object.defineProperty(Shape.prototype, \"geometry\", {\n        get: function () {\n            return transform_1.Transform.apply(this.transforms, this.__geometry);\n        },\n        set: function (value) {\n            this.__geometry = value;\n        },\n        enumerable: true,\n        configurable: true\n    });\n    ;\n    Shape.prototype.draw = function (render, opt) {\n        this.drawGeometry(render, opt);\n        if (opt.drawBoundIfInPoint) {\n            var bound = this.geometry.bound;\n            if (isPointInBound_1.isPointInBound(opt.cursor, bound)) {\n                render.drawRectangle(bound, false);\n            }\n        }\n        _super.prototype.draw.call(this, render, opt);\n    };\n    return Shape;\n}(layer_1.Layer));\nexports.Shape = Shape;\n\n\n//# sourceURL=webpack:///./src/core/shape.ts?");
+
+/***/ }),
+
+/***/ "./src/core/transform.ts":
+/*!*******************************!*\
+  !*** ./src/core/transform.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar Transform = /** @class */ (function () {\n    function Transform() {\n    }\n    Transform.apply = function (transforms, geometry) {\n        return transforms.reduce(function (geometry, transformation) { return transformation.apply(geometry); }, geometry);\n    };\n    return Transform;\n}());\nexports.Transform = Transform;\n\n\n//# sourceURL=webpack:///./src/core/transform.ts?");
+
+/***/ }),
+
+/***/ "./src/core/transforms/index.ts":
+/*!**************************************!*\
+  !*** ./src/core/transforms/index.ts ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\ntslib_1.__exportStar(__webpack_require__(/*! ./translate */ \"./src/core/transforms/translate.ts\"), exports);\n\n\n//# sourceURL=webpack:///./src/core/transforms/index.ts?");
+
+/***/ }),
+
+/***/ "./src/core/transforms/translate.ts":
+/*!******************************************!*\
+  !*** ./src/core/transforms/translate.ts ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\nvar transform_1 = __webpack_require__(/*! ../transform */ \"./src/core/transform.ts\");\nvar geometries_1 = __webpack_require__(/*! ../geometries */ \"./src/core/geometries/index.ts\");\nvar Translate = /** @class */ (function (_super) {\n    tslib_1.__extends(Translate, _super);\n    function Translate(x, y) {\n        var _this = _super.call(this) || this;\n        _this.x = 0;\n        _this.y = 0;\n        _this.x = x;\n        _this.y = y;\n        return _this;\n    }\n    Translate.prototype.apply = function (g) {\n        var _this = this;\n        if (g instanceof geometries_1.Bound) {\n            return new geometries_1.Bound(this.x + g.x, this.y + g.y, g.w, g.h);\n        }\n        if (g instanceof geometries_1.Point) {\n            return new geometries_1.Point(this.x + g.x, this.y + g.y);\n        }\n        if (g instanceof geometries_1.Round) {\n            return new geometries_1.Round(this.x + g.x, this.y + g.y, g.r);\n        }\n        if (g instanceof geometries_1.Multipoint) {\n            var ng = new geometries_1.Multipoint();\n            return g.reduce(function (ng, p) {\n                return ng.push(_this.apply(p)), ng;\n            }, ng);\n        }\n        return g;\n    };\n    return Translate;\n}(transform_1.Transform));\nexports.Translate = Translate;\n\n\n//# sourceURL=webpack:///./src/core/transforms/translate.ts?");
 
 /***/ }),
 
@@ -224,7 +344,7 @@ eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar ts
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar api_1 = __webpack_require__(/*! ./core/api */ \"./src/core/api.ts\");\nvar layer_1 = __webpack_require__(/*! ./core/layer */ \"./src/core/layer.ts\");\nvar Shapes = __webpack_require__(/*! ./shapes */ \"./src/shapes/index.ts\");\nObject.keys(Shapes).forEach(function (key) {\n    api_1.Api[key] = Shapes[key];\n});\napi_1.Api.Layer = layer_1.Layer;\nexports.PaintApi = api_1.Api;\n\n\n//# sourceURL=webpack:///./src/index.ts?");
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar api_1 = __webpack_require__(/*! ./core/api */ \"./src/core/api.ts\");\nvar layer_1 = __webpack_require__(/*! ./core/layer */ \"./src/core/layer.ts\");\nvar Transforms = __webpack_require__(/*! ./core/transforms */ \"./src/core/transforms/index.ts\");\nvar Geometries = __webpack_require__(/*! ./core/geometries */ \"./src/core/geometries/index.ts\");\nvar Shapes = __webpack_require__(/*! ./shapes */ \"./src/shapes/index.ts\");\nObject.keys(Shapes).forEach(function (key) {\n    api_1.Api.Shapes[key] = Shapes[key];\n});\nObject.keys(Geometries).forEach(function (key) {\n    api_1.Api.Geometries[key] = Geometries[key];\n});\nObject.keys(Transforms).forEach(function (key) {\n    api_1.Api.Transforms[key] = Transforms[key];\n});\napi_1.Api.Layer = layer_1.Layer;\nexports.PaintApi = api_1.Api;\n\n\n//# sourceURL=webpack:///./src/index.ts?");
 
 /***/ }),
 
@@ -236,7 +356,7 @@ eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar ap
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\nvar shape_1 = __webpack_require__(/*! ../core/shape */ \"./src/core/shape.ts\");\nvar Bitmap = /** @class */ (function (_super) {\n    tslib_1.__extends(Bitmap, _super);\n    function Bitmap(img, x, y, w, h) {\n        var _this = _super.call(this) || this;\n        _this.img = img;\n        _this.x = x;\n        _this.y = y;\n        _this.w = w;\n        _this.h = h;\n        return _this;\n    }\n    Object.defineProperty(Bitmap.prototype, \"bound\", {\n        get: function () {\n            return this;\n        },\n        enumerable: true,\n        configurable: true\n    });\n    Bitmap.prototype.drawGeometry = function (render) {\n        render.drawImage(this.img, this);\n    };\n    return Bitmap;\n}(shape_1.Shape));\nexports.Bitmap = Bitmap;\n\n\n//# sourceURL=webpack:///./src/shapes/bitmap.ts?");
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\nvar shape_1 = __webpack_require__(/*! ../core/shape */ \"./src/core/shape.ts\");\nvar geometries_1 = __webpack_require__(/*! ../core/geometries/ */ \"./src/core/geometries/index.ts\");\nvar Bitmap = /** @class */ (function (_super) {\n    tslib_1.__extends(Bitmap, _super);\n    function Bitmap(img, x, y, w, h) {\n        var _this = _super.call(this) || this;\n        _this.img = img;\n        _this.geometry = new geometries_1.Bound(x, y, w, h);\n        return _this;\n    }\n    Bitmap.prototype.drawGeometry = function (render) {\n        render.drawImage(this.img, this.geometry);\n    };\n    return Bitmap;\n}(shape_1.Shape));\nexports.Bitmap = Bitmap;\n\n\n//# sourceURL=webpack:///./src/shapes/bitmap.ts?");
 
 /***/ }),
 
@@ -248,7 +368,7 @@ eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar ts
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\nvar shape_1 = __webpack_require__(/*! ../core/shape */ \"./src/core/shape.ts\");\nvar Circle = /** @class */ (function (_super) {\n    tslib_1.__extends(Circle, _super);\n    function Circle(x, y, r) {\n        var _this = _super.call(this) || this;\n        _this.x = x;\n        _this.y = y;\n        _this.r = r;\n        return _this;\n    }\n    Object.defineProperty(Circle.prototype, \"bound\", {\n        get: function () {\n            return {\n                x: this.x - this.r,\n                y: this.y - this.r,\n                w: this.r * 2,\n                h: this.r * 2\n            };\n        },\n        enumerable: true,\n        configurable: true\n    });\n    Circle.prototype.drawGeometry = function (render) {\n        render.drawCircle(this.x, this.y, this.r);\n    };\n    return Circle;\n}(shape_1.Shape));\nexports.Circle = Circle;\n\n\n//# sourceURL=webpack:///./src/shapes/circle.ts?");
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\nvar shape_1 = __webpack_require__(/*! ../core/shape */ \"./src/core/shape.ts\");\nvar geometries_1 = __webpack_require__(/*! ../core/geometries/ */ \"./src/core/geometries/index.ts\");\nvar Circle = /** @class */ (function (_super) {\n    tslib_1.__extends(Circle, _super);\n    function Circle(x, y, r) {\n        var _this = _super.call(this) || this;\n        _this.geometry = new geometries_1.Round(x, y, r);\n        return _this;\n    }\n    Circle.prototype.drawGeometry = function (render) {\n        render.drawCircle(this.geometry);\n    };\n    return Circle;\n}(shape_1.Shape));\nexports.Circle = Circle;\n\n\n//# sourceURL=webpack:///./src/shapes/circle.ts?");
 
 /***/ }),
 
@@ -272,7 +392,7 @@ eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar ts
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\nvar shape_1 = __webpack_require__(/*! ../core/shape */ \"./src/core/shape.ts\");\nvar Polyline = /** @class */ (function (_super) {\n    tslib_1.__extends(Polyline, _super);\n    function Polyline(points) {\n        var _this = _super.call(this) || this;\n        _this.points = [];\n        points.forEach(function (point) {\n            _this.points.push(Array.isArray(point) ? { x: point[0], y: point[1] } : point);\n        });\n        return _this;\n    }\n    Object.defineProperty(Polyline.prototype, \"bound\", {\n        get: function () {\n            if (this.points.length < 2) {\n                throw new Error('Need at least two points');\n            }\n            var bnd = {\n                x1: Infinity,\n                x2: -Infinity,\n                y1: Infinity,\n                y2: -Infinity,\n            };\n            this.points.forEach(function (point) {\n                bnd.x1 = Math.min(point.x, bnd.x1);\n                bnd.y1 = Math.min(point.y, bnd.y1);\n                bnd.x2 = Math.max(point.x, bnd.x2);\n                bnd.y2 = Math.max(point.y, bnd.y2);\n            });\n            return {\n                x: bnd.x1,\n                y: bnd.y1,\n                w: bnd.x2 - bnd.x1,\n                h: bnd.y2 - bnd.y1\n            };\n        },\n        enumerable: true,\n        configurable: true\n    });\n    Polyline.prototype.drawGeometry = function (render) {\n        render.drawPolyline(this.points);\n    };\n    return Polyline;\n}(shape_1.Shape));\nexports.Polyline = Polyline;\n\n\n//# sourceURL=webpack:///./src/shapes/polyline.ts?");
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\nvar shape_1 = __webpack_require__(/*! ../core/shape */ \"./src/core/shape.ts\");\nvar geometries_1 = __webpack_require__(/*! ../core/geometries/ */ \"./src/core/geometries/index.ts\");\nvar Polyline = /** @class */ (function (_super) {\n    tslib_1.__extends(Polyline, _super);\n    function Polyline(points) {\n        var _this = _super.call(this) || this;\n        _this.geometry = new geometries_1.Multipoint(points);\n        return _this;\n    }\n    Polyline.prototype.drawGeometry = function (render) {\n        render.drawPolyline(this.geometry);\n    };\n    return Polyline;\n}(shape_1.Shape));\nexports.Polyline = Polyline;\n\n\n//# sourceURL=webpack:///./src/shapes/polyline.ts?");
 
 /***/ }),
 
@@ -284,7 +404,7 @@ eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar ts
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\nvar shape_1 = __webpack_require__(/*! ../core/shape */ \"./src/core/shape.ts\");\nvar Rectangle = /** @class */ (function (_super) {\n    tslib_1.__extends(Rectangle, _super);\n    function Rectangle(x, y, w, h) {\n        var _this = _super.call(this) || this;\n        _this.x = x;\n        _this.y = y;\n        _this.w = w;\n        _this.h = h;\n        return _this;\n    }\n    Object.defineProperty(Rectangle.prototype, \"bound\", {\n        get: function () {\n            return this;\n        },\n        enumerable: true,\n        configurable: true\n    });\n    Rectangle.prototype.drawGeometry = function (render) {\n        render.drawRectangle(this, true);\n    };\n    return Rectangle;\n}(shape_1.Shape));\nexports.Rectangle = Rectangle;\n\n\n//# sourceURL=webpack:///./src/shapes/rectangle.ts?");
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar tslib_1 = __webpack_require__(/*! tslib */ \"./node_modules/tslib/tslib.es6.js\");\nvar shape_1 = __webpack_require__(/*! ../core/shape */ \"./src/core/shape.ts\");\nvar geometries_1 = __webpack_require__(/*! ../core/geometries/ */ \"./src/core/geometries/index.ts\");\nvar Rectangle = /** @class */ (function (_super) {\n    tslib_1.__extends(Rectangle, _super);\n    function Rectangle(x, y, w, h) {\n        var _this = _super.call(this) || this;\n        _this.geometry = new geometries_1.Bound(x, y, w, h);\n        return _this;\n    }\n    Rectangle.prototype.drawGeometry = function (render) {\n        render.drawRectangle(this.geometry, true);\n    };\n    return Rectangle;\n}(shape_1.Shape));\nexports.Rectangle = Rectangle;\n\n\n//# sourceURL=webpack:///./src/shapes/rectangle.ts?");
 
 /***/ })
 

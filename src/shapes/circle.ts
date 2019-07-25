@@ -1,29 +1,15 @@
 import { Shape } from "../core/shape";
-import { IRender, IBound } from "../types";
+import { IRender } from "../types";
+import { Round } from "../core/geometries/";
 
-export class Circle extends Shape {
-	x: number;
-	y: number;
-	r: number;
-
-	get bound(): IBound {
-		return {
-			x: this.x - this.r,
-			y: this.y - this.r,
-			w: this.r * 2,
-			h: this.r * 2
-		}
-	}
-
+export class Circle extends Shape<Round> {
 	constructor(x: number, y: number, r: number) {
 		super();
 
-		this.x = x;
-		this.y = y;
-		this.r = r;
+		this.geometry = new Round(x, y, r);
 	}
 
 	drawGeometry(render: IRender): void {
-		render.drawCircle(this.x, this.y, this.r);
+		render.drawCircle(this.geometry);
 	}
 }

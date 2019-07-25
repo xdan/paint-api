@@ -1,4 +1,4 @@
-import { IBound, ImageSource, IPoint, IRender } from "../types/";
+import {IBound, ImageSource, IPoint, IRender, IRound} from "../types/";
 
 export class Render implements IRender {
 	private context: CanvasRenderingContext2D;
@@ -69,9 +69,9 @@ export class Render implements IRender {
 		this.context.drawImage(image, bound.x, bound.y, bound.w, bound.h);
 	}
 
-	drawCircle(x: number, y: number, r: number): void {
+	drawCircle(round: IRound): void {
 		this.context.beginPath();
-		this.context.arc(x, y, r, 0, 2 * Math.PI);
+		this.context.arc(round.x, round.y, round.r, 0, 2 * Math.PI);
 		this.context.stroke();
 	}
 

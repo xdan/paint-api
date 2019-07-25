@@ -1,26 +1,15 @@
 import { Shape } from "../core/shape";
-import { IBound, IRender } from "../types";
+import { IRender } from "../types";
+import { Bound } from "../core/geometries/";
 
-export class Rectangle extends Shape {
-	x: number;
-	y: number;
-	w: number;
-	h: number;
-
-	get bound(): IBound {
-		return this;
-	}
-
+export class Rectangle extends Shape<Bound> {
 	constructor(x: number, y: number, w: number, h: number) {
 		super();
 
-		this.x = x;
-		this.y = y;
-		this.w = w;
-		this.h = h;
+		this.geometry = new Bound(x, y, w, h);
 	}
 
 	drawGeometry(render: IRender): void {
-		render.drawRectangle(this, true);
+		render.drawRectangle(this.geometry, true);
 	}
 }

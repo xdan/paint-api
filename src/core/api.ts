@@ -1,7 +1,10 @@
-import {IState, IRender, IEventer, IDictionary} from "../types";
+import { IState, IRender, IEventer, IDictionary } from "../types";
 import { Render } from "./render";
 import { ObserveObject } from "./observe/object";
 import { Eventer } from "./observe/eventer";
+import { Shape } from "./shape";
+import { Geometry } from "./geometry";
+import { Transform } from "./transform";
 
 export class Api {
 	render: IRender;
@@ -19,7 +22,7 @@ export class Api {
 		cursor: {
 			x: 0,
 			y: 0,
-			draw: false
+			draw: true
 		}
 	};
 
@@ -56,7 +59,7 @@ export class Api {
 		});
 	}
 
-	private draw() {
+	draw() {
 		this.render.clear();
 
 		const
@@ -77,4 +80,8 @@ export class Api {
 			this.render.drawCursor(cursor)
 		}
 	}
+
+	static Shapes: IDictionary<typeof Shape> = {};
+	static Geometries: IDictionary<typeof Geometry> = {};
+	static Transforms: IDictionary<typeof Transform> = {};
 }

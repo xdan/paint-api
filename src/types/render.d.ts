@@ -1,4 +1,4 @@
-import { IBound, IPoint } from "./global";
+import { IBound, IPoint, IPolyline, IRound } from "./geometry";
 
 export type ImageSource = CanvasImageSource;
 
@@ -9,11 +9,11 @@ export interface IRender {
 
 	drawImage(image: ImageSource, bound: IBound): void;
 
-	drawCircle(x: number, y: number, r: number): void;
-	drawPolyline(points: IPoint[]): void;
+	drawCircle(round: IRound): void;
+	drawPolyline(points: IPolyline): void;
 
 	drawRectangle(bound: IBound, fill: boolean): void;
-	drawCursor(bound: IPoint): void;
+	drawCursor(point: IPoint): void;
 }
 
 export interface DrawOptions {

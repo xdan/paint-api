@@ -1,4 +1,4 @@
-import { IPoint } from "./global";
+import {IPoint} from "./geometry";
 
 export interface ISyntheticEvent {
 	type: keyof EventTypes;

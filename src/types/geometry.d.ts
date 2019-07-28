@@ -1,5 +1,6 @@
 export interface IGeometry {
 	bound: IBound;
+	center: IPoint;
 }
 
 export interface IPoint {

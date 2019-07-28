@@ -4,8 +4,8 @@ import { Bound, Multipoint, Point, Round } from "../geometries";
 
 
 export class Translate extends Transform implements ITransform, IPoint {
-	x: number = 0;
-	y: number = 0;
+	x: number;
+	y: number;
 
 	constructor(x: number, y: number) {
 		super();

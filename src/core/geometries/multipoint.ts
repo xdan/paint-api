@@ -1,8 +1,8 @@
-import {IBound, IPolyline, PointVariant} from "../../types";
+import { IBound, IGeometry, IPoint, IPolyline, PointVariant } from "../../types";
 import { Point } from "./point";
 import { getBoundByMultiline } from "../helpers/getBoundByMultiline";
 
-export class Multipoint extends Array implements IPolyline {
+export class Multipoint extends Array implements IPolyline, IGeometry {
 	constructor(points?: PointVariant[]) {
 		super();
 
@@ -17,5 +17,14 @@ export class Multipoint extends Array implements IPolyline {
 
 	get bound(): IBound {
 		return getBoundByMultiline(this)
+	}
+
+	get center(): IPoint {
+		const bound = this.bound;
+
+		return {
+			x: bound.x + Math.round(bound.w / 2),
+			y: bound.y + Math.round(bound.h / 2)
+		};
 	}
 }

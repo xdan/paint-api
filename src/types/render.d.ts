@@ -10,16 +10,14 @@ export interface IRender {
 	drawImage(image: ImageSource, bound: IBound): void;
 
 	drawCircle(round: IRound): void;
+
 	drawPolyline(points: IPolyline): void;
 
 	drawRectangle(bound: IBound, fill: boolean): void;
+
 	drawCursor(point: IPoint): void;
 
 	drawText(point: IPoint, text: string): void;
 }
 
-export interface DrawOptions {
-	drawBound?: boolean;
-	drawBoundIfInPoint?: boolean;
-	cursor: IPoint;
-}
+export interface DrawOptions {}

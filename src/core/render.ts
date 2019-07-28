@@ -76,9 +76,26 @@ export class Render implements IRender {
 	}
 
 	drawPolyline(points: IPoint[]): void {
-		this.context.beginPath();
+		if (points.length < 2) {
+			return;
+		}
 
+		this.context.beginPath();
+		this.context.lineCap = "round";
+		this.context.lineWidth = 2;
 		this.context.setLineDash([2, 2]);
+
+		this.context.moveTo(points[0].x, points[0].y);
+
+		for (let i = 1; i < points.length - 2; i += 1)  {
+			const
+				xc = (points[i].x + points[i + 1].x) / 2,
+				yc = (points[i].y + points[i + 1].y) / 2;
+
+			this.context.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+		}
+		// curve through the last two points
+		this.context.quadraticCurveTo(points[points.length - 2].x, points[points.length - 2].y, points[points.length - 2 + 1].x,points[points.length - 2 + 1].y);
 
 		points.forEach(({x, y}, index) => {
 			if (!index) {
@@ -94,6 +111,8 @@ export class Render implements IRender {
 	}
 
 	drawRectangle(bound: IBound, fill: boolean): void {
+		this.context.lineWidth = 1;
+
 		if (fill) {
 			this.context.fillRect(bound.x, bound.y, bound.w, bound.h);
 
@@ -105,6 +124,8 @@ export class Render implements IRender {
 
 	drawCursor({x, y}: IPoint): void {
 		this.context.beginPath();
+		this.context.lineWidth = 1;
+
 
 		this.context.setLineDash([2, 2]);
 

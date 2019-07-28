@@ -1,17 +1,21 @@
-import { IState, IRender, IEventer, IDictionary, IMouseSyntheticEvent, IPoint, IShape } from "../types";
-import { Render } from "./render";
-import { Eventer } from "./observe/eventer";
-import { Shape } from "./shape";
-import { Geometry } from "./geometry";
-import { Transform } from "./transform";
-import { isPointInBound, mergeDeep } from "./helpers";
-import { Translate } from "./transforms";
+import {IDictionary, IEventer, IMouseSyntheticEvent, IPoint, IRender, IShape, IState, SceneSteps} from "../types";
+import {Render} from "./render";
+import {Eventer} from "./observe/eventer";
+import {Shape} from "./shape";
+import {Geometry} from "./geometry";
+import {Transform} from "./transform";
+import {distanceBetween, isPointInBound, mergeDeep} from "./helpers";
+import {Translate} from "./transforms";
+import {Polyline} from "../shapes";
+import {Layer} from "./layer";
 
 export class Api {
 	render: IRender;
 	events: IEventer<Api> = new Eventer(this);
 
 	state: IState = {
+		step: SceneSteps.nope,
+
 		options: {
 			showFPS: true
 		},
@@ -73,31 +77,61 @@ export class Api {
 
 		let
 			translate: null | Translate = null,
+			shape: null | Polyline = null,
 			start: IPoint = {x: 0, y: 0};
 
 		this.events
 			.on('mouseup', (e) => {
+				this.state.step = SceneSteps.nope;
 				this.state.shapes.active = [];
 				translate = null;
+				shape = null;
 			})
 			.on('mousedown', (e) => {
-				this.state.shapes.active = this.getShapesUnderPoint(e);
+				const clickedShapes = this.getShapesUnderPoint(e);
+
+				if (clickedShapes.length) {
+					this.state.shapes.active = clickedShapes;
+					this.state.step = SceneSteps.drag;
+				} else {
+					this.state.step = SceneSteps.draw;
+				}
+
+				console.log(this.state.step);
+
 				start = e;
 			})
 			.on('mousemove', setCursor)
 			.on('mousemove', (e) => {
-				if (this.state.shapes.active.length) {
-					if (!translate) {
-						translate = new Translate(e.x, e.y);
+					switch (this.state.step) {
+						case SceneSteps.draw:
+							if (!shape) {
+								shape = new Polyline([e]);
+								const layer = new Layer();
+								this.state.layers.push(layer);
+								layer.add(shape);
+								console.log(shape);
+							} else if (distanceBetween(e, start) > 3) {
+								shape.geometry.push(e);
+								start = e;
+							}
 
-						this.state.shapes.active.forEach((shape) => {
-							translate && shape.transforms.push(translate);
-						})
+							break;
+
+						case SceneSteps.drag:
+							if (!translate) {
+								translate = new Translate(e.x, e.y);
+
+								this.state.shapes.active.forEach((shape) => {
+									translate && shape.transforms.push(translate);
+								})
+							}
+
+							translate.x = e.x - start.x;
+							translate.y = e.y - start.y;
+
+							break;
 					}
-
-					translate.x = e.x - start.x;
-					translate.y = e.y - start.y;
-				}
 			});
 	}
 

@@ -1,11 +1,10 @@
 import { IState, IRender, IEventer, IDictionary, IMouseSyntheticEvent, IPoint, IShape } from "../types";
 import { Render } from "./render";
-// import { ObserveObject } from "./observe/object";
 import { Eventer } from "./observe/eventer";
 import { Shape } from "./shape";
 import { Geometry } from "./geometry";
 import { Transform } from "./transform";
-import { isPointInBound } from "./helpers/isPointInBound";
+import { isPointInBound, mergeDeep } from "./helpers";
 import { Translate } from "./transforms";
 
 export class Api {
@@ -38,7 +37,8 @@ export class Api {
 	};
 
 	constructor(options?: IDictionary) {
-		// this.state = ObserveObject.create({...this.state, ...options}, this.draw.bind(this));
+		this.state = <IState>mergeDeep(this.state, options);
+
 		const redraw = () => {
 			this.draw();
 			requestAnimationFrame(redraw);

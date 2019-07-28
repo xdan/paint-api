@@ -14,6 +14,8 @@ export interface IRender {
 
 	drawRectangle(bound: IBound, fill: boolean): void;
 	drawCursor(point: IPoint): void;
+
+	drawText(point: IPoint, text: string): void;
 }
 
 export interface DrawOptions {

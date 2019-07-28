@@ -1,7 +1,6 @@
 import { IRender, IShape, DrawOptions, ITransform, IGeometry } from "../types";
 import { Layer } from "./layer";
-import { isPointInBound } from "./helpers/isPointInBound";
-import {Transform} from "./transform";
+import { Transform } from "./transform";
 
 export abstract class Shape<G extends IGeometry> extends Layer implements IShape {
 	transforms: ITransform[] = [];
@@ -19,15 +18,6 @@ export abstract class Shape<G extends IGeometry> extends Layer implements IShape
 
 	draw(render: IRender, opt: DrawOptions): void {
 		this.drawGeometry(render, opt);
-
-		if (opt.drawBoundIfInPoint) {
-			const { bound } = this.geometry;
-
-			if (isPointInBound(opt.cursor, bound)) {
-				render.drawRectangle(bound, false);
-			}
-		}
-
 		super.draw(render, opt)
 	}
 }

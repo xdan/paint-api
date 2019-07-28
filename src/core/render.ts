@@ -120,4 +120,14 @@ export class Render implements IRender {
 
 		this.context.setLineDash([]);
 	}
+
+	drawText({x, y}: IPoint, text: string): void {
+		if (x < 0) {
+			const metrics = this.context.measureText(text);
+
+			x += this.state.width - metrics.width;
+		}
+
+		this.context.fillText(text, x, y);
+	}
 }

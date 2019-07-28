@@ -1,13 +1,13 @@
-import { IRender, ILayer, DrawOptions } from "../types";
+import { IRender, ILayer, DrawOptions, IShape } from "../types";
 
 export class Layer implements ILayer {
-	shapes: ILayer[];
+	shapes: IShape[];
 
-	constructor(shapes: ILayer[] = []) {
+	constructor(shapes: IShape[] = []) {
 		this.shapes = shapes;
 	}
 
-	add(shape: ILayer) {
+	add(shape: IShape) {
 		this.shapes.push(shape);
 	}
 

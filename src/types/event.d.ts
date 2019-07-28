@@ -9,12 +9,14 @@ export interface IMouseSyntheticEvent extends ISyntheticEvent, IPoint {}
 export type Handler<T = undefined, E = ISyntheticEvent> = (this: T, e: E) => any;
 
 export interface EventTypes {
+	"mouseup": IMouseSyntheticEvent;
 	"mousedown": IMouseSyntheticEvent;
 	"mousemove": IMouseSyntheticEvent;
 	[key: string]: ISyntheticEvent;
 }
 
 export interface RequiredParamsList {
+	"mouseup": IPoint;
 	"mousedown": IPoint;
 	"mousemove": IPoint;
 	[key: string]: any;

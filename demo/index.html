@@ -37,19 +37,19 @@
 		]),
 	]));
 
-	setInterval(() => {
-		api.state.layers.forEach(layer => {
-			layer.shapes.forEach(shape => {
-				shape.transforms.push(
-					// new Translate(i, i),
-					new Scale(1 + i / 100, 1 + i / 100),
-				);
-			});
-		});
-
-		api.draw();
-		i += 1;
-	}, 1000);
+	// setInterval(() => {
+	// 	api.state.layers.forEach(layer => {
+	// 		layer.shapes.forEach(shape => {
+	// 			shape.transforms.push(
+	// 				new Translate(i, i),
+	// 				new Scale(1 + i / 100, 1 + i / 100),
+	// 			);
+	// 		});
+	// 	});
+	//
+	// 	api.draw();
+	// 	i += 1;
+	// }, 1000);
 
 	api.bind(document.getElementById('root'));
 </script>

@@ -21,4 +21,9 @@ export interface IPolyline extends Array<IPoint> {
 	[key: number]: IPoint
 }
 
-type PointVariant = IPoint | [number, number];
+export type PointVariant = IPoint | [number, number];
+
+export type Matrix2x2 = [
+	[number, number],
+	[number, number]
+];

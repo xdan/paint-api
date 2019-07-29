@@ -8,6 +8,7 @@ import {distanceBetween, isPointInBound, mergeDeep} from "./helpers";
 import {Translate} from "./transforms";
 import {Polyline} from "../shapes";
 import {Layer} from "./layer";
+import {Point} from "./geometries";
 
 export class Api {
 	render: IRender;
@@ -110,9 +111,9 @@ export class Api {
 								const layer = new Layer();
 								this.state.layers.push(layer);
 								layer.add(shape);
-								console.log(shape);
-							} else if (distanceBetween(e, start) > 3) {
-								shape.geometry.push(e);
+
+							} else if (distanceBetween(e, start) > 10) {
+								shape.geometry.push(new Point(e));
 								start = e;
 							}
 

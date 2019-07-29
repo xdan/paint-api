@@ -122,7 +122,14 @@ export class Api {
 
 						if (clickedShapes.length) {
 							this.state.shapes.active = [clickedShapes[0]];
+							this.events.fire(
+								'select',
+								this.state.shapes.active
+							);
+
 							this.state.step = SceneSteps.drag;
+						} else {
+							this.state.shapes.active.length = 0;
 						}
 
 						break;

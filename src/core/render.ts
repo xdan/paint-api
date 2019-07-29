@@ -1,4 +1,12 @@
-import { IBound, ImageSource, IPoint, IRender, IRound } from "../types/";
+import {
+	IBound,
+	ImageSource,
+	IPoint,
+	IRender,
+	IRound,
+	IStyle
+} from '../types/';
+import { Style } from './style';
 
 export class Render implements IRender {
 	private context: CanvasRenderingContext2D;
@@ -10,7 +18,7 @@ export class Render implements IRender {
 
 	private state = {
 		width: 0,
-		height: 0,
+		height: 0
 	};
 
 	protected constructor(width: number = 400, height: number = 400) {
@@ -22,14 +30,13 @@ export class Render implements IRender {
 	}
 
 	protected makeCanvas(width: number, height: number) {
-		const
-			canvas = document.createElement("canvas");
+		const canvas = document.createElement('canvas');
 
 		if (!canvas) {
 			throw new Error('Canvas was not created');
 		}
 
-		const ctx = canvas.getContext("2d");
+		const ctx = canvas.getContext('2d');
 
 		if (!ctx) {
 			throw new Error('Canvas context was not created');
@@ -46,7 +53,7 @@ export class Render implements IRender {
 			return;
 		}
 
-		this.context.canvas.width  = width;
+		this.context.canvas.width = width;
 		this.context.canvas.height = height;
 
 		this.container.style.width = width + 'px';
@@ -87,15 +94,19 @@ export class Render implements IRender {
 
 		this.context.moveTo(points[0].x, points[0].y);
 
-		for (let i = 1; i < points.length - 2; i += 1)  {
-			const
-				xc = (points[i].x + points[i + 1].x) / 2,
+		for (let i = 1; i < points.length - 2; i += 1) {
+			const xc = (points[i].x + points[i + 1].x) / 2,
 				yc = (points[i].y + points[i + 1].y) / 2;
 
 			this.context.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
 		}
 		// curve through the last two points
-		this.context.quadraticCurveTo(points[points.length - 2].x, points[points.length - 2].y, points[points.length - 2 + 1].x,points[points.length - 2 + 1].y);
+		this.context.quadraticCurveTo(
+			points[points.length - 2].x,
+			points[points.length - 2].y,
+			points[points.length - 2 + 1].x,
+			points[points.length - 2 + 1].y
+		);
 
 		// points.forEach(({x, y}, index) => {
 		// 	if (!index) {
@@ -115,17 +126,15 @@ export class Render implements IRender {
 
 		if (fill) {
 			this.context.fillRect(bound.x, bound.y, bound.w, bound.h);
-
 		} else {
 			this.context.rect(bound.x, bound.y, bound.w, bound.h);
 			this.context.stroke();
 		}
 	}
 
-	drawCursor({x, y}: IPoint): void {
+	drawCursor({ x, y }: IPoint): void {
 		this.context.beginPath();
 		this.context.lineWidth = 1;
-
 
 		this.context.setLineDash([2, 2]);
 
@@ -142,7 +151,7 @@ export class Render implements IRender {
 		this.context.setLineDash([]);
 	}
 
-	drawText({x, y}: IPoint, text: string): void {
+	drawText({ x, y }: IPoint, text: string): void {
 		if (x < 0) {
 			const metrics = this.context.measureText(text);
 
@@ -150,5 +159,18 @@ export class Render implements IRender {
 		}
 
 		this.context.fillText(text, x, y);
+	}
+
+	private defaultStyle = new Style();
+
+	setStyle(style: IStyle): void {
+		this.context.strokeStyle = style.color.hex;
+		this.context.lineWidth = style.strokeWidth;
+
+		this.context.globalAlpha = 1 - style.opacity;
+	}
+
+	resetStyle(): void {
+		this.setStyle(this.defaultStyle);
 	}
 }

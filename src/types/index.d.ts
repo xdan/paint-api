@@ -7,3 +7,4 @@ export * from './array';
 export * from './event';
 export * from './transform';
 export * from './geometry';
+export * from './style';

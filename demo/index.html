@@ -14,6 +14,9 @@
 	<div id="toolbar">
 		<button onclick="api.setMode(PaintApi.MODE_SELECT)" type="button">Select</button>
 		<button onclick="api.setMode(PaintApi.MODE_DRAW)" type="button">Draw</button>
+		<button onclick="increaseWidth()" type="button">inc</button>
+		<button onclick="decreaseWidth()" type="button">dec</button>
+		<input onchange="setOpacity(this.value)" type="range" min="0" max="10" value="10">
 	</div>
 	<div id="root"></div>
 </body>
@@ -40,6 +43,29 @@
 			[110 + i, 50 + i],
 		]),
 	]));
+
+	function increaseWidth() {
+		const [active] = api.state.shapes.active;
+		if (active) {
+			console.log(active.style.strokeWidth)
+			active.style.strokeWidth += 1;
+		}
+	}
+
+	function decreaseWidth() {
+		const [active] = api.state.shapes.active;
+		if (active) {
+			active.style.strokeWidth = active.style.strokeWidth > 1 ? active.style.strokeWidth - 1 : 1;
+		}
+	}
+
+	function setOpacity(opacity) {
+		const [active] = api.state.shapes.active;
+		if (active) {
+			active.style.opacity = parseInt(opacity, 10) / 10;
+			console.log(active.style.opacity);
+		}
+	}
 
 	// setInterval(() => {
 	// 	api.state.layers.forEach(layer => {

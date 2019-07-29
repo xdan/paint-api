@@ -1,4 +1,4 @@
-import {IBound, ImageSource, IPoint, IRender, IRound} from "../types/";
+import { IBound, ImageSource, IPoint, IRender, IRound } from "../types/";
 
 export class Render implements IRender {
 	private context: CanvasRenderingContext2D;
@@ -81,9 +81,9 @@ export class Render implements IRender {
 		}
 
 		this.context.beginPath();
-		this.context.lineCap = "round";
-		this.context.lineWidth = 2;
-		this.context.setLineDash([2, 2]);
+		// this.context.lineCap = "round";
+		// this.context.lineWidth = 2;
+		// this.context.setLineDash([2, 2]);
 
 		this.context.moveTo(points[0].x, points[0].y);
 
@@ -97,13 +97,13 @@ export class Render implements IRender {
 		// curve through the last two points
 		this.context.quadraticCurveTo(points[points.length - 2].x, points[points.length - 2].y, points[points.length - 2 + 1].x,points[points.length - 2 + 1].y);
 
-		points.forEach(({x, y}, index) => {
-			if (!index) {
-				this.context.moveTo(x, y);
-			}
-
-			this.context.lineTo(x, y);
-		});
+		// points.forEach(({x, y}, index) => {
+		// 	if (!index) {
+		// 		this.context.moveTo(x, y);
+		// 	}
+		//
+		// 	this.context.lineTo(x, y);
+		// });
 
 		this.context.stroke();
 

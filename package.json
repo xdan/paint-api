@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "publish": "cp package.json ./dist/package.json && npm publish ./dist/",
     "build": "rm -f dist/* && webpack --mode production --config ./webpack.dev.js --progress",
     "start": "rm -f dist/* && webpack --config ./webpack.dev.js --progress --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -20,9 +21,12 @@
     "css-loader": "^3.1.0",
     "less": "^3.9.0",
     "less-loader": "^5.0.0",
+    "prettier": "^1.18.2",
     "style-loader": "^0.23.1",
     "tslib": "^1.10.0",
     "tslint": "^5.18.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^3.5.3",
     "uglifyjs-webpack-plugin": "^2.1.3",
     "webpack": "^4.37.0",

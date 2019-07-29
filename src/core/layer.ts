@@ -1,4 +1,4 @@
-import { IRender, ILayer, DrawOptions, IShape } from "../types";
+import { IRender, ILayer, DrawOptions, IShape } from '../types';
 
 export class Layer implements ILayer {
 	shapes: IShape[];

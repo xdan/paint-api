@@ -1,20 +1,31 @@
-import {IDictionary, IEventer, IMouseSyntheticEvent, IPoint, IRender, IShape, IState, SceneSteps} from "../types";
-import {Render} from "./render";
-import {Eventer} from "./observe/eventer";
-import {Shape} from "./shape";
-import {Geometry} from "./geometry";
-import {Transform} from "./transform";
-import {distanceBetween, isPointInBound, mergeDeep} from "./helpers";
-import {Translate} from "./transforms";
-import {Polyline} from "../shapes";
-import {Layer} from "./layer";
-import {Point} from "./geometries";
+import {
+	IDictionary,
+	IEventer,
+	IMouseSyntheticEvent,
+	IPoint,
+	IRender,
+	IShape,
+	IState,
+	Modes,
+	SceneSteps
+} from '../types';
+import { Render } from './render';
+import { Eventer } from './observe/eventer';
+import { Shape } from './shape';
+import { Geometry } from './geometry';
+import { Transform } from './transform';
+import { distanceBetween, isPointInBound, mergeDeep } from './helpers';
+import { Translate } from './transforms';
+import { Polyline } from '../shapes';
+import { Layer } from './layer';
+import { Point } from './geometries';
 
 export class Api {
 	render: IRender;
 	events: IEventer<Api> = new Eventer(this);
 
 	state: IState = {
+		mode: Modes.nope,
 		step: SceneSteps.nope,
 
 		options: {
@@ -31,7 +42,7 @@ export class Api {
 		height: 400,
 
 		behaviours: {
-			selectShapeOnMouseEnter: true,
+			selectShapeOnMouseEnter: true
 		},
 
 		cursor: {
@@ -42,7 +53,7 @@ export class Api {
 	};
 
 	constructor(options?: IDictionary) {
-		this.state = <IState>mergeDeep(this.state, options);
+		this.state = mergeDeep(this.state, options) as IState;
 
 		const redraw = () => {
 			this.draw();
@@ -59,12 +70,12 @@ export class Api {
 	getShapesUnderPoint(point: IPoint): IShape[] {
 		const result: IShape[] = [];
 
-		this.state.layers.forEach((layer) => {
-			layer.shapes.forEach((shape) => {
+		this.state.layers.forEach(layer => {
+			layer.shapes.forEach(shape => {
 				if (isPointInBound(point, shape.geometry.bound)) {
 					result.push(shape);
 				}
-			})
+			});
 		});
 
 		return result;
@@ -76,19 +87,20 @@ export class Api {
 			this.state.cursor.y = e.y;
 		};
 
-		let
-			translate: null | Translate = null,
+		let translate: null | Translate = null,
 			shape: null | Polyline = null,
-			start: IPoint = {x: 0, y: 0};
+			lastPoint: null | IPoint = null,
+			start: IPoint = { x: 0, y: 0 };
 
 		this.events
-			.on('mouseup', (e) => {
+			.on('mouseup', () => {
 				this.state.step = SceneSteps.nope;
 				this.state.shapes.active = [];
 				translate = null;
 				shape = null;
+				lastPoint = null;
 			})
-			.on('mousedown', (e) => {
+			.on('mousedown', e => {
 				const clickedShapes = this.getShapesUnderPoint(e);
 
 				if (clickedShapes.length) {
@@ -103,36 +115,49 @@ export class Api {
 				start = e;
 			})
 			.on('mousemove', setCursor)
-			.on('mousemove', (e) => {
-					switch (this.state.step) {
-						case SceneSteps.draw:
-							if (!shape) {
-								shape = new Polyline([e]);
-								const layer = new Layer();
-								this.state.layers.push(layer);
-								layer.add(shape);
-
-							} else if (distanceBetween(e, start) > 10) {
-								shape.geometry.push(new Point(e));
+			.on('mousemove', e => {
+				switch (this.state.step) {
+					case SceneSteps.draw:
+						if (!shape) {
+							shape = new Polyline([e]);
+							const layer = new Layer();
+							this.state.layers.push(layer);
+							layer.add(shape);
+						} else {
+							if (!lastPoint) {
+								lastPoint = new Point(e);
+								shape.geometry.push(lastPoint);
 								start = e;
 							}
 
-							break;
+							lastPoint.x = e.x;
+							lastPoint.y = e.y;
 
-						case SceneSteps.drag:
-							if (!translate) {
-								translate = new Translate(e.x, e.y);
+							console.log();
 
-								this.state.shapes.active.forEach((shape) => {
-									translate && shape.transforms.push(translate);
-								})
+							if (distanceBetween(e, start) > 5) {
+								lastPoint = null;
 							}
+						}
 
-							translate.x = e.x - start.x;
-							translate.y = e.y - start.y;
+						this.draw();
 
-							break;
-					}
+						break;
+
+					case SceneSteps.drag:
+						if (!translate) {
+							translate = new Translate(e.x, e.y);
+
+							this.state.shapes.active.forEach(shape => {
+								translate && shape.transforms.push(translate);
+							});
+						}
+
+						translate.x = e.x - start.x;
+						translate.y = e.y - start.y;
+
+						break;
+				}
 			});
 	}
 
@@ -141,7 +166,6 @@ export class Api {
 
 		if (container) {
 			root.appendChild(container);
-
 		} else {
 			throw new Error('Render has not HTML connector');
 		}
@@ -151,20 +175,32 @@ export class Api {
 
 			this.events.fire(e.type, {
 				x: e.clientX - rect.left,
-				y: e.clientY - rect.top,
-			})
+				y: e.clientY - rect.top
+			});
 		};
 
-		['mousemove', 'mousedown', 'mouseup'].forEach((eventType) => {
-			container.addEventListener(eventType, <any>mouseEvent);
+		['mousemove', 'mousedown', 'mouseup'].forEach(eventType => {
+			container.addEventListener(eventType, mouseEvent as any);
+		});
+
+		container.addEventListener('mouseleave', () => {
+			this.state.cursor.x = -10;
+			this.state.cursor.y = -10;
+		});
+
+		['mouseup'].forEach(eventType => {
+			window.addEventListener(eventType, ((e: MouseEvent) => {
+				if (e.target !== container) {
+					mouseEvent(e);
+				}
+			}) as any);
 		});
 	}
 
 	draw() {
 		this.render.clear();
 
-		const
-			{ width, height, layers, cursor } = this.state,
+		const { width, height, layers, cursor } = this.state,
 			{ selectShapeOnMouseEnter } = this.state.behaviours,
 			drawOptions = {
 				drawBoundIfInPoint: selectShapeOnMouseEnter,
@@ -173,7 +209,7 @@ export class Api {
 
 		this.render.setSize(width, height);
 
-		layers.forEach((layer) => {
+		layers.forEach(layer => {
 			layer.draw(this.render, drawOptions);
 		});
 
@@ -182,13 +218,13 @@ export class Api {
 		});
 
 		if (cursor.draw) {
-			this.render.drawCursor(cursor)
+			this.render.drawCursor(cursor);
 		}
 
 		const text = this.debugInfo();
 
 		if (text.length) {
-			this.render.drawText({x: -10, y: 10}, text);
+			this.render.drawText({ x: -10, y: 10 }, text);
 		}
 	}
 

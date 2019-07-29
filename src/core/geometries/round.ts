@@ -1,5 +1,5 @@
-import { Geometry } from "../geometry";
-import { IBound, IRound } from "../../types";
+import { Geometry } from '../geometry';
+import { IBound, IRound } from '../../types';
 
 export class Round extends Geometry implements IRound {
 	x: number;
@@ -20,6 +20,6 @@ export class Round extends Geometry implements IRound {
 			y: this.y - this.r,
 			w: this.r * 2,
 			h: this.r * 2
-		}
+		};
 	}
 }

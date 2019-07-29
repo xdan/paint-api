@@ -1,7 +1,6 @@
-import { IGeometry, IPoint, ITransform } from "../../types";
-import { Transform } from "../transform";
-import { Bound, Multipoint, Point, Round } from "../geometries";
-
+import { IGeometry, IPoint, ITransform } from '../../types';
+import { Transform } from '../transform';
+import { Bound, Multipoint, Point, Round } from '../geometries';
 
 export class Translate extends Transform implements ITransform, IPoint {
 	x: number;
@@ -31,7 +30,8 @@ export class Translate extends Transform implements ITransform, IPoint {
 			const ng = new Multipoint();
 
 			return g.reduce((ng, p) => {
-				return ng.push(this.apply(p)), ng;
+				ng.push(this.apply(p));
+				return ng;
 			}, ng);
 		}
 

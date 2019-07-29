@@ -1,6 +1,6 @@
-import { Shape } from "../core/shape";
-import { IRender, PointVariant } from "../types";
-import { Multipoint } from "../core/geometries/";
+import { Shape } from '../core/shape';
+import { IRender, PointVariant } from '../types';
+import { Multipoint } from '../core/geometries/';
 
 export class Polyline extends Shape<Multipoint> {
 	constructor(points?: PointVariant[]) {

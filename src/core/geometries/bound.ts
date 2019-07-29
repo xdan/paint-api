@@ -1,5 +1,5 @@
-import { Geometry } from "../geometry";
-import { IBound } from "../../types";
+import { Geometry } from '../geometry';
+import { IBound } from '../../types';
 
 export class Bound extends Geometry implements IBound {
 	x: number;

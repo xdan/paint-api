@@ -18,12 +18,9 @@ export interface IBound extends IPoint {
 }
 
 export interface IPolyline extends Array<IPoint> {
-	[key: number]: IPoint
+	[key: number]: IPoint;
 }
 
 export type PointVariant = IPoint | [number, number];
 
-export type Matrix2x2 = [
-	[number, number],
-	[number, number]
-];
+export type Matrix2x2 = [[number, number], [number, number]];

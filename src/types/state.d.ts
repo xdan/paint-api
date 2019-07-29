@@ -1,13 +1,19 @@
-import { ILayer } from "./layer";
-import { IObservableArray } from "./array";
-import { IPoint } from "./geometry";
-import { IShape } from "./shape";
+import { ILayer } from './layer';
+import { IObservableArray } from './array';
+import { IPoint } from './geometry';
+import { IShape } from './shape';
 
 export const enum SceneSteps {
+	nope,
 	drag,
 	scale,
-	draw,
-	nope
+	draw
+}
+
+export const enum Modes {
+	nope,
+	select,
+	draw
 }
 
 export interface IState {
@@ -17,21 +23,22 @@ export interface IState {
 	height: number;
 
 	step: SceneSteps;
+	mode: Modes;
 
 	cursor: IPoint & {
 		draw: boolean;
-	},
+	};
 
 	options: {
 		showFPS: boolean;
-	}
+	};
 
 	behaviours: {
 		selectShapeOnMouseEnter: boolean;
-	}
+	};
 
 	shapes: {
-		active: IShape[],
-		hover: IShape[],
-	}
+		active: IShape[];
+		hover: IShape[];
+	};
 }

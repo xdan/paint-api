@@ -1,3 +1,1 @@
-export interface IObservableArray<T> extends Array<T> {
-
-}
+export interface IObservableArray<T> extends Array<T> {}

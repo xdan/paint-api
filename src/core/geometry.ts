@@ -1,4 +1,4 @@
-import { IBound, IGeometry, IPoint } from "../types";
+import { IBound, IGeometry, IPoint } from '../types';
 
 export abstract class Geometry implements IGeometry {
 	abstract bound: IBound;

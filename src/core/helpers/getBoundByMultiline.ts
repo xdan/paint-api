@@ -1,4 +1,4 @@
-import { IBound, IPolyline } from "../../types";
+import { IBound, IPolyline } from '../../types';
 
 export function getBoundByMultiline(points: IPolyline): IBound {
 	if (points.length < 2) {
@@ -9,10 +9,10 @@ export function getBoundByMultiline(points: IPolyline): IBound {
 		x1: Infinity,
 		x2: -Infinity,
 		y1: Infinity,
-		y2: -Infinity,
+		y2: -Infinity
 	};
 
-	points.forEach((point) => {
+	points.forEach(point => {
 		bnd.x1 = Math.min(point.x, bnd.x1);
 		bnd.y1 = Math.min(point.y, bnd.y1);
 		bnd.x2 = Math.max(point.x, bnd.x2);
@@ -24,5 +24,5 @@ export function getBoundByMultiline(points: IPolyline): IBound {
 		y: bnd.y1,
 		w: bnd.x2 - bnd.x1,
 		h: bnd.y2 - bnd.y1
-	}
+	};
 }

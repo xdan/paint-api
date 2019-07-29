@@ -1,5 +1,5 @@
-import { IRender, DrawOptions } from "./render";
-import { IShape } from "./shape";
+import { IRender, DrawOptions } from './render';
+import { IShape } from './shape';
 
 export interface ILayer {
 	shapes: IShape[];

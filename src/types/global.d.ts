@@ -3,4 +3,3 @@ export interface IDictionary<T = any> {
 }
 
 export type Callback<T = any> = (arg?: T, ...args: any[]) => any;
-

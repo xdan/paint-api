@@ -1,4 +1,4 @@
-import { IObservableArray } from "../../types/";
+import { IObservableArray } from '../../types/';
 
 export class ObserveArray<T> extends Array<T> implements IObservableArray<T> {
 	change: () => any;
@@ -8,7 +8,7 @@ export class ObserveArray<T> extends Array<T> implements IObservableArray<T> {
 	}
 
 	static create<T>(items: T[], change: () => any): ObserveArray<T> {
-		const array = <ObserveArray<T>>Object.create(ObserveArray.prototype);
+		const array = Object.create(ObserveArray.prototype);
 
 		Array.prototype.push.call(array, ...items);
 		array.change = change;

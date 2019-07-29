@@ -1,4 +1,4 @@
-import { IBound, IPoint, IPolyline, IRound } from "./geometry";
+import { IBound, IPoint, IPolyline, IRound } from './geometry';
 
 export type ImageSource = CanvasImageSource;
 

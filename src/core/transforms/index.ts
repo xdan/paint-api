@@ -1,3 +1,2 @@
-export * from "./translate";
-export * from "./scale";
-
+export * from './translate';
+export * from './scale';

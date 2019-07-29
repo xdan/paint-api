@@ -11,9 +11,11 @@ export class Point extends Geometry implements IPoint {
 		if (typeof x === 'number') {
 			this.x = x;
 			this.y = y || 0;
+
 		} else if (Array.isArray(x)) {
 			this.x = x[0];
 			this.y = x[1];
+
 		} else {
 			this.x = x.x;
 			this.y = x.y;

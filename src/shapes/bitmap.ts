@@ -1,6 +1,6 @@
-import { Shape } from "../core/shape";
-import { ImageSource, IRender } from "../types";
-import { Bound } from "../core/geometries/";
+import { Shape } from '../core/shape';
+import { ImageSource, IRender } from '../types';
+import { Bound } from '../core/geometries/';
 
 export class Bitmap extends Shape<Bound> {
 	img: ImageSource;

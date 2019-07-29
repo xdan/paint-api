@@ -1,13 +1,19 @@
-import { IBound, IGeometry, IPoint, IPolyline, PointVariant } from "../../types";
-import { Point } from "./point";
-import { getBoundByMultiline } from "../helpers/getBoundByMultiline";
+import {
+	IBound,
+	IGeometry,
+	IPoint,
+	IPolyline,
+	PointVariant
+} from '../../types';
+import { Point } from './point';
+import { getBoundByMultiline } from '../helpers/';
 
 export class Multipoint extends Array implements IPolyline, IGeometry {
 	constructor(points?: PointVariant[]) {
 		super();
 
 		if (points) {
-			points.forEach((point) => {
+			points.forEach(point => {
 				this.push(point instanceof Point ? point : new Point(point));
 			});
 		}
@@ -16,7 +22,7 @@ export class Multipoint extends Array implements IPolyline, IGeometry {
 	}
 
 	get bound(): IBound {
-		return getBoundByMultiline(this)
+		return getBoundByMultiline(this);
 	}
 
 	get center(): IPoint {

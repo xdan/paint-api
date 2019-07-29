@@ -11,6 +11,10 @@
 	<link rel="stylesheet" href="./style.css">
 </head>
 <body>
+	<div id="toolbar">
+		<button onclick="api.setMode(PaintApi.MODE_SELECT)" type="button">Select</button>
+		<button onclick="api.setMode(PaintApi.MODE_DRAW)" type="button">Draw</button>
+	</div>
 	<div id="root"></div>
 </body>
 <script src="../dist/index.js"></script>

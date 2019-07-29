@@ -25,7 +25,7 @@ export class Api {
 	events: IEventer<Api> = new Eventer(this);
 
 	state: IState = {
-		mode: Modes.nope,
+		mode: Modes.select,
 		step: SceneSteps.nope,
 
 		options: {
@@ -51,6 +51,15 @@ export class Api {
 			draw: true
 		}
 	};
+
+	/**
+	 * Change current mode
+	 * @param mode
+	 */
+	setMode(mode: Modes) {
+		this.state.mode = mode;
+		this.state.shapes.active = [];
+	}
 
 	constructor(options?: IDictionary) {
 		this.state = mergeDeep(this.state, options) as IState;
@@ -95,24 +104,33 @@ export class Api {
 		this.events
 			.on('mouseup', () => {
 				this.state.step = SceneSteps.nope;
-				this.state.shapes.active = [];
 				translate = null;
 				shape = null;
 				lastPoint = null;
 			})
 			.on('mousedown', e => {
-				const clickedShapes = this.getShapesUnderPoint(e);
-
-				if (clickedShapes.length) {
-					this.state.shapes.active = clickedShapes;
-					this.state.step = SceneSteps.drag;
-				} else {
-					this.state.step = SceneSteps.draw;
-				}
-
-				console.log(this.state.step);
-
 				start = e;
+
+				switch (this.state.mode) {
+					case Modes.draw: {
+						this.state.step = SceneSteps.draw;
+						break;
+					}
+
+					case Modes.select: {
+						const clickedShapes = this.getShapesUnderPoint(e);
+
+						if (clickedShapes.length) {
+							this.state.shapes.active = [clickedShapes[0]];
+							this.state.step = SceneSteps.drag;
+						}
+
+						break;
+					}
+
+					default:
+						this.state.step = SceneSteps.nope;
+				}
 			})
 			.on('mousemove', setCursor)
 			.on('mousemove', e => {

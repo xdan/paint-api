@@ -1,5 +1,12 @@
-import { IGeometry } from './geometry';
+import { IShapeRecord } from './shape';
+
+export const enum TransformType {
+	geometry,
+	style,
+	both
+}
 
 export interface ITransform {
-	apply(geometry: IGeometry): IGeometry;
+	type: TransformType;
+	apply(record: IShapeRecord): IShapeRecord;
 }

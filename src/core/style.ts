@@ -5,4 +5,5 @@ export class Style implements IStyle {
 	color = new RGB();
 	opacity = 0;
 	strokeWidth = 1;
+	lineCap: 'butt' | 'round' | 'square' = 'round';
 }

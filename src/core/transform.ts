@@ -1,12 +1,24 @@
-import { IGeometry, ITransform } from '../types';
+import { IShapeRecord, ITransform, TransformType } from '../types';
 
 export abstract class Transform implements ITransform {
-	static apply(transforms: ITransform[], geometry: IGeometry): IGeometry {
-		return transforms.reduce(
-			(geometry, transformation) => transformation.apply(geometry),
-			geometry
-		);
+	abstract type: TransformType;
+
+	static apply(
+		transforms: ITransform[],
+		record: IShapeRecord,
+		type: TransformType
+	): IShapeRecord {
+		return transforms
+			.filter(
+				transform =>
+					transform.type === type ||
+					transform.type === TransformType.both
+			)
+			.reduce(
+				(record, transformation) => transformation.apply(record),
+				record
+			);
 	}
 
-	abstract apply(geometry: IGeometry): IGeometry;
+	abstract apply(geometry: IShapeRecord): IShapeRecord;
 }

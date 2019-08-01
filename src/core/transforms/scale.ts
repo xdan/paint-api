@@ -1,8 +1,16 @@
-import { IGeometry, IPoint, ITransform, Matrix2x2 } from '../../types';
+import {
+	IPoint,
+	IShapeRecord,
+	ITransform,
+	Matrix2x2,
+	TransformType
+} from '../../types';
 import { Transform } from '../transform';
 import { Bound, Multipoint, Point, Round } from '../geometries';
 
 export class Scale extends Transform implements ITransform {
+	type: TransformType = TransformType.geometry;
+
 	sx: number;
 	sy: number;
 	origin?: IPoint;
@@ -30,15 +38,19 @@ export class Scale extends Transform implements ITransform {
 		p[1][0] = temp[1][0];
 	}
 
-	apply(g: IGeometry): IGeometry {
-		const origin: IPoint = this.origin || g.center;
+	apply(r: IShapeRecord): IShapeRecord {
+		const g = r.geometry,
+			origin: IPoint = this.origin || g.center;
 
 		if (g instanceof Round) {
-			return new Round(
-				g.x,
-				g.y,
-				g.r + Math.sqrt(Math.pow(this.sx, 2) + Math.pow(this.sy, 2))
-			);
+			return {
+				...r,
+				geometry: new Round(
+					g.x,
+					g.y,
+					g.r + Math.sqrt(Math.pow(this.sx, 2) + Math.pow(this.sy, 2))
+				)
+			};
 		}
 
 		if (g instanceof Bound) {
@@ -52,12 +64,15 @@ export class Scale extends Transform implements ITransform {
 			this.findNewCoordinate(s, start);
 			this.findNewCoordinate(s, end);
 
-			return new Bound(
-				start[0][0] + origin.x,
-				start[1][0] + origin.y,
-				end[0][0] + origin.x - (start[0][0] + origin.x),
-				end[1][0] + origin.y - (start[1][0] + origin.y)
-			);
+			return {
+				...r,
+				geometry: new Bound(
+					start[0][0] + origin.x,
+					start[1][0] + origin.y,
+					end[0][0] + origin.x - (start[0][0] + origin.x),
+					end[1][0] + origin.y - (start[1][0] + origin.y)
+				)
+			};
 		}
 
 		if (g instanceof Multipoint) {
@@ -75,9 +90,12 @@ export class Scale extends Transform implements ITransform {
 				ng.push(new Point(p[0][0] + origin.x, p[1][0] + origin.y));
 			});
 
-			return ng;
+			return {
+				...r,
+				geometry: ng
+			};
 		}
 
-		return g;
+		return r;
 	}
 }

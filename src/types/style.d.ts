@@ -10,4 +10,5 @@ export interface IStyle {
 	color: IRGB;
 	opacity: number;
 	strokeWidth: number;
+	lineCap: 'butt' | 'round' | 'square';
 }

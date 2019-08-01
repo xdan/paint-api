@@ -12,3 +12,8 @@ export interface IShape extends ILayer {
 
 	drawGeometry(render: IRender, opt: DrawOptions): void;
 }
+
+export interface IShapeRecord {
+	geometry: IGeometry;
+	style: IStyle;
+}

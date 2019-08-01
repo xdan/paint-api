@@ -100,7 +100,7 @@ export class Render implements IRender {
 
 			this.context.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
 		}
-		// curve through the last two points
+
 		this.context.quadraticCurveTo(
 			points[points.length - 2].x,
 			points[points.length - 2].y,
@@ -108,28 +108,21 @@ export class Render implements IRender {
 			points[points.length - 2 + 1].y
 		);
 
-		// points.forEach(({x, y}, index) => {
-		// 	if (!index) {
-		// 		this.context.moveTo(x, y);
-		// 	}
-		//
-		// 	this.context.lineTo(x, y);
-		// });
-
 		this.context.stroke();
 
 		this.context.setLineDash([]);
 	}
 
 	drawRectangle(bound: IBound, fill: boolean): void {
-		this.context.lineWidth = 1;
+		this.context.beginPath();
 
 		if (fill) {
 			this.context.fillRect(bound.x, bound.y, bound.w, bound.h);
 		} else {
 			this.context.rect(bound.x, bound.y, bound.w, bound.h);
-			this.context.stroke();
 		}
+
+		this.context.stroke();
 	}
 
 	drawCursor({ x, y }: IPoint): void {
@@ -166,7 +159,7 @@ export class Render implements IRender {
 	setStyle(style: IStyle): void {
 		this.context.strokeStyle = style.color.hex;
 		this.context.lineWidth = style.strokeWidth;
-
+		this.context.lineCap = style.lineCap;
 		this.context.globalAlpha = 1 - style.opacity;
 	}
 

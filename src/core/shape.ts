@@ -4,18 +4,22 @@ import {
 	DrawOptions,
 	ITransform,
 	IGeometry,
-	IStyle
+	IStyle,
+	IManager
 } from '../types';
-import { Layer } from './layer';
 import { Transform } from './transform';
 import { TRANSFORM_GEOMETRY, TRANSFORM_STYLE } from '../const';
+import { Manager } from './manager';
+import { Layer } from './layer';
 
 export abstract class Shape<G extends IGeometry> extends Layer
 	implements IShape {
+	manager: IManager;
 	transforms: ITransform[] = [];
 
 	protected constructor(shapes: IShape[] = []) {
 		super(shapes);
+		this.manager = new Manager(this);
 	}
 
 	private __geometry: G;

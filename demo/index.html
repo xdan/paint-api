@@ -25,7 +25,7 @@
 	const
 		api = new PaintApi(),
 		{ Bitmap, Circle, Rectangle, Polyline } = PaintApi.Shapes,
-		{ Translate, Scale } = PaintApi.Transforms;
+		{ Translate, Scale, Opacity, StrokeWidth } = PaintApi.Transforms;
 
 	let i = 0, image = new Image();
 	image.src = './mario.png';
@@ -46,24 +46,25 @@
 
 	function increaseWidth() {
 		const [active] = api.state.shapes.active;
+
 		if (active) {
-			console.log(active.style.strokeWidth)
-			active.style.strokeWidth += 1;
+			active.transforms.push(new StrokeWidth(active.style.strokeWidth + 1));
 		}
 	}
 
 	function decreaseWidth() {
 		const [active] = api.state.shapes.active;
+
 		if (active) {
-			active.style.strokeWidth = active.style.strokeWidth > 1 ? active.style.strokeWidth - 1 : 1;
+			active.transforms.push(new StrokeWidth(active.style.strokeWidth - 1));
 		}
 	}
 
 	function setOpacity(opacity) {
 		const [active] = api.state.shapes.active;
+
 		if (active) {
-			active.style.opacity = parseInt(opacity, 10) / 10;
-			console.log(active.style.opacity);
+			active.transforms.push(new Opacity(parseInt(opacity, 10) / 10));
 		}
 	}
 

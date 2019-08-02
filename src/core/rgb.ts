@@ -16,6 +16,10 @@ export class RGB implements IRGB {
 	}
 
 	set hex(value: string) {
+		if (value.length < 6) {
+			value = value.replace(/([A-F0-9])/gi, '$1$1');
+		}
+
 		const bigint = parseInt(
 			value.indexOf('#') === 0 ? value.substr(1) : value,
 			16

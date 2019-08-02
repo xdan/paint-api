@@ -13,11 +13,12 @@ export interface IRender {
 
 	drawImage(image: ImageSource, bound: IBound): void;
 
-	drawCircle(round: IRound): void;
+	drawCircle(round: IRound, fill?: boolean): void;
 
 	drawPolyline(points: IPolyline): void;
+	drawLine(pointA: IPoint, pointB: IPoint): void;
 
-	drawRectangle(bound: IBound, fill: boolean): void;
+	drawRectangle(bound: IBound, fill?: boolean): void;
 
 	drawCursor(point: IPoint): void;
 

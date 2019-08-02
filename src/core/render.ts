@@ -76,9 +76,14 @@ export class Render implements IRender {
 		this.context.drawImage(image, bound.x, bound.y, bound.w, bound.h);
 	}
 
-	drawCircle(round: IRound): void {
+	drawCircle(round: IRound, fill: boolean = false): void {
 		this.context.beginPath();
 		this.context.arc(round.x, round.y, round.r, 0, 2 * Math.PI);
+
+		if (fill) {
+			this.context.fill();
+		}
+
 		this.context.stroke();
 	}
 
@@ -88,9 +93,6 @@ export class Render implements IRender {
 		}
 
 		this.context.beginPath();
-		// this.context.lineCap = "round";
-		// this.context.lineWidth = 2;
-		// this.context.setLineDash([2, 2]);
 
 		this.context.moveTo(points[0].x, points[0].y);
 
@@ -109,8 +111,13 @@ export class Render implements IRender {
 		);
 
 		this.context.stroke();
+	}
 
-		this.context.setLineDash([]);
+	drawLine(pointA: IPoint, pointB: IPoint): void {
+		this.context.beginPath();
+		this.context.moveTo(pointA.x, pointA.y);
+		this.context.lineTo(pointB.x, pointB.y);
+		this.context.stroke();
 	}
 
 	drawRectangle(bound: IBound, fill: boolean): void {
@@ -158,9 +165,11 @@ export class Render implements IRender {
 
 	setStyle(style: IStyle): void {
 		this.context.strokeStyle = style.color.hex;
+		this.context.fillStyle = style.fillColor.hex;
 		this.context.lineWidth = style.strokeWidth;
 		this.context.lineCap = style.lineCap;
 		this.context.globalAlpha = 1 - style.opacity;
+		this.context.setLineDash(style.dash);
 	}
 
 	resetStyle(): void {

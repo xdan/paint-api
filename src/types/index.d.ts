@@ -8,3 +8,4 @@ export * from './event';
 export * from './transform';
 export * from './geometry';
 export * from './style';
+export * from './manager';

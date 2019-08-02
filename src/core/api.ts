@@ -94,6 +94,7 @@ export class Api {
 		const setCursor = (e: IMouseSyntheticEvent) => {
 			this.state.cursor.x = e.x;
 			this.state.cursor.y = e.y;
+			this.draw();
 		};
 
 		let translate: null | Translate = null,
@@ -122,6 +123,7 @@ export class Api {
 
 						if (clickedShapes.length) {
 							this.state.shapes.active = [clickedShapes[0]];
+
 							this.events.fire(
 								'select',
 								this.state.shapes.active
@@ -148,6 +150,7 @@ export class Api {
 							const layer = new Layer();
 							this.state.layers.push(layer);
 							layer.add(shape);
+
 						} else {
 							if (!lastPoint) {
 								lastPoint = new Point(e);
@@ -157,8 +160,6 @@ export class Api {
 
 							lastPoint.x = e.x;
 							lastPoint.y = e.y;
-
-							console.log();
 
 							if (distanceBetween(e, start) > 5) {
 								lastPoint = null;
@@ -181,6 +182,8 @@ export class Api {
 						translate.x = e.x - start.x;
 						translate.y = e.y - start.y;
 
+						this.draw();
+
 						break;
 				}
 			});
@@ -189,11 +192,14 @@ export class Api {
 	bind(root: HTMLElement) {
 		const container = this.render.getContainer();
 
-		if (container) {
-			root.appendChild(container);
-		} else {
+		if (!container || !root) {
 			throw new Error('Render has not HTML connector');
 		}
+
+		root.appendChild(container);
+
+		(container as any).__paint_api__ = this;
+		(root as any).__paint_api__ = this;
 
 		const mouseEvent = (e: MouseEvent) => {
 			const rect = container.getBoundingClientRect();
@@ -238,9 +244,9 @@ export class Api {
 			layer.draw(this.render, drawOptions);
 		});
 
-		this.state.shapes.active.forEach(shape => {
-			this.render.drawRectangle(shape.geometry.bound, false);
-		});
+		this.state.shapes.active.forEach(shape =>
+			shape.manager.draw(this.render, cursor)
+		);
 
 		if (cursor.draw) {
 			this.render.drawCursor(cursor);

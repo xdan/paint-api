@@ -1,6 +1,17 @@
 import { Style } from './style';
-import { IBound, IManager, IPoint, IRender, IShape } from '../types';
-import { isOnLine } from './helpers/isOnLine';
+import {
+	EventTypes,
+	IBound,
+	IManager,
+	IMouseSyntheticEvent,
+	IPoint,
+	IRender,
+	IRound,
+	IShape
+} from '../types';
+import { isOnLine, isInRound } from './helpers/';
+import { HANDLE_RADIUS } from '../const';
+import { ucfirst } from './helpers/ucfirst';
 
 export class Manager implements IManager {
 	constructor(readonly shape: IShape) {}
@@ -20,51 +31,68 @@ export class Manager implements IManager {
 		}),
 
 		active: new Style({
-			fillColor: '#ff00ff',
+			fillColor: '#00b8ff',
 			dash: [5, 1],
 			color: '#cccccc'
 		})
 	};
 
-	private getBoundLines(
-		bound: IBound,
-		handleRadius: number
-	): Array<[IPoint, IPoint]> {
+	private getBoundLines(bound: IBound): Array<[IPoint, IPoint]> {
 		return [
 			[
-				{ x: bound.x + handleRadius, y: bound.y },
-				{ x: bound.x + bound.w - handleRadius, y: bound.y }
+				{ x: bound.x + HANDLE_RADIUS, y: bound.y },
+				{ x: bound.x + bound.w - HANDLE_RADIUS, y: bound.y }
 			],
 
 			[
-				{ x: bound.x + bound.w, y: bound.y + handleRadius },
-				{ x: bound.x + bound.w, y: bound.y + bound.h - handleRadius }
+				{ x: bound.x + bound.w, y: bound.y + HANDLE_RADIUS },
+				{ x: bound.x + bound.w, y: bound.y + bound.h - HANDLE_RADIUS }
 			],
 
 			[
-				{ x: bound.x + handleRadius, y: bound.y + bound.h },
-				{ x: bound.x + bound.w - handleRadius, y: bound.y + bound.h }
+				{ x: bound.x + HANDLE_RADIUS, y: bound.y + bound.h },
+				{ x: bound.x + bound.w - HANDLE_RADIUS, y: bound.y + bound.h }
 			],
 
 			[
-				{ x: bound.x, y: bound.y + handleRadius },
-				{ x: bound.x, y: bound.y + bound.h - handleRadius }
+				{ x: bound.x, y: bound.y + HANDLE_RADIUS },
+				{ x: bound.x, y: bound.y + bound.h - HANDLE_RADIUS }
 			]
+		];
+	}
+
+	private getCorners(bound: IBound): IRound[] {
+		return [
+			{
+				x: bound.x,
+				y: bound.y,
+				r: HANDLE_RADIUS
+			},
+			{
+				x: bound.x + bound.w,
+				y: bound.y,
+				r: HANDLE_RADIUS
+			},
+			{
+				x: bound.x + bound.w,
+				y: bound.y + bound.h,
+				r: HANDLE_RADIUS
+			},
+			{
+				x: bound.x,
+				y: bound.y + bound.h,
+				r: HANDLE_RADIUS
+			}
 		];
 	}
 
 	draw(render: IRender, cursor: IPoint): void {
 		render.setStyle(this.styles.line);
 
-		const handleRadius = 4,
-			bound = this.shape.geometry.bound,
-			round = {
-				x: bound.x,
-				y: bound.y,
-				r: handleRadius
-			};
+		const bound = this.shape.bound;
 
-		const lines = this.getBoundLines(bound, handleRadius);
+		const lines = this.getBoundLines(bound);
+
 		lines.forEach(line => {
 			render.setStyle(
 				isOnLine(cursor, line) ? this.styles.active : this.styles.line
@@ -73,35 +101,42 @@ export class Manager implements IManager {
 			render.drawLine(line[0], line[1]);
 		});
 
-		render.setStyle(this.styles.round);
+		const corners = this.getCorners(bound);
 
-		render.drawCircle(round, true);
+		corners.forEach(corner => {
+			render.setStyle(
+				isInRound(cursor, corner)
+					? this.styles.active
+					: this.styles.round
+			);
 
-		render.drawCircle(
-			{
-				...round,
-				x: bound.x + bound.w
-			},
-			true
-		);
-
-		render.drawCircle(
-			{
-				...round,
-				x: bound.x + bound.w,
-				y: bound.y + bound.h
-			},
-			true
-		);
-
-		render.drawCircle(
-			{
-				...round,
-				y: bound.y + bound.h
-			},
-			true
-		);
+			render.drawCircle(corner, true);
+		});
 
 		render.resetStyle();
+	}
+
+	fire(eventName: keyof EventTypes, e: IMouseSyntheticEvent): void {
+		const bound = this.shape.bound;
+
+		const lines = this.getBoundLines(bound),
+			type = ucfirst(eventName.toString()),
+			es = { ...e, shape: this.shape };
+
+		e.api.events.fire('shape' + type, es);
+
+		lines.forEach(line => {
+			if (isOnLine(e, line)) {
+				e.api.events.fire('border' + type, es, line);
+			}
+		});
+
+		const corners = this.getCorners(bound);
+
+		corners.forEach(corner => {
+			if (isInRound(e, corner)) {
+				e.api.events.fire('corner' + type, { ...es, corner });
+			}
+		});
 	}
 }

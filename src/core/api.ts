@@ -1,28 +1,24 @@
-import {
-	IDictionary,
-	IEventer,
-	IMouseSyntheticEvent,
-	IPoint,
-	IRender,
-	IShape,
-	IState,
-	Modes,
-	SceneSteps
-} from '../types';
+import { IBound, IDictionary, IEventer, IMouseSyntheticEvent, IPoint, IRender, IShape, IState, Modes, SceneSteps } from '../types';
 import { Render } from './render';
 import { Eventer } from './observe/eventer';
 import { Shape } from './shape';
 import { Geometry } from './geometry';
 import { Transform } from './transform';
-import { distanceBetween, isPointInBound, mergeDeep } from './helpers';
-import { Translate } from './transforms';
+import { distanceBetween, isInBound, mergeDeep } from './helpers';
+import { IApi } from '../types/api';
 import { Polyline } from '../shapes';
 import { Layer } from './layer';
+import { Scale, Translate } from './transforms';
 import { Point } from './geometries';
+import { getOppositeCorner } from './helpers/getOppositeCorner';
+// import { Translate } from './transforms';
+// import { Polyline } from '../shapes';
+// import { Layer } from './layer';
+// import { Point } from './geometries';
 
-export class Api {
+export class Api implements IApi {
 	render: IRender;
-	events: IEventer<Api> = new Eventer(this);
+	events: IEventer<IApi> = new Eventer(this);
 
 	state: IState = {
 		mode: Modes.select,
@@ -81,7 +77,7 @@ export class Api {
 
 		this.state.layers.forEach(layer => {
 			layer.shapes.forEach(shape => {
-				if (isPointInBound(point, shape.geometry.bound)) {
+				if (isInBound(point, shape.geometry.bound)) {
 					result.push(shape);
 				}
 			});
@@ -90,24 +86,48 @@ export class Api {
 		return result;
 	}
 
-	addMouseListeners() {
+	protected addMouseListeners() {
 		const setCursor = (e: IMouseSyntheticEvent) => {
 			this.state.cursor.x = e.x;
 			this.state.cursor.y = e.y;
 			this.draw();
 		};
 
-		let translate: null | Translate = null,
+		let scale: null | Scale = null,
+			translate: null | Translate = null,
 			shape: null | Polyline = null,
 			lastPoint: null | IPoint = null,
+			startBound: IBound = { x: 0, y: 0, w: 0, h: 0 },
 			start: IPoint = { x: 0, y: 0 };
 
 		this.events
-			.on('mouseup', () => {
+			.on('cornerMousedown', e => {
+				if (e.shape && e.corner) {
+					this.state.step = SceneSteps.scale;
+					this.state.shapes.active = [e.shape];
+					start = getOppositeCorner(e.shape.bound, e.corner);
+					startBound = e.shape.bound;
+				}
+			})
+			.on('shapeMousedown', e => {
+				if (e.shape) {
+					this.state.step = SceneSteps.drag;
+					this.state.shapes.active = [e.shape];
+				}
+			})
+			.on('mouseup', e => {
 				this.state.step = SceneSteps.nope;
+
 				translate = null;
+				scale = null;
 				shape = null;
 				lastPoint = null;
+
+				if (this.state.mode === Modes.select) {
+					this.state.layers.forEach(layer =>
+						layer.fire('mouseup', e)
+					);
+				}
 			})
 			.on('mousedown', e => {
 				start = e;
@@ -119,20 +139,9 @@ export class Api {
 					}
 
 					case Modes.select: {
-						const clickedShapes = this.getShapesUnderPoint(e);
-
-						if (clickedShapes.length) {
-							this.state.shapes.active = [clickedShapes[0]];
-
-							this.events.fire(
-								'select',
-								this.state.shapes.active
-							);
-
-							this.state.step = SceneSteps.drag;
-						} else {
-							this.state.shapes.active.length = 0;
-						}
+						this.state.layers.forEach(layer =>
+							layer.fire('mousedown', e)
+						);
 
 						break;
 					}
@@ -151,6 +160,7 @@ export class Api {
 							this.state.layers.push(layer);
 							layer.add(shape);
 
+							this.state.shapes.active = [shape];
 						} else {
 							if (!lastPoint) {
 								lastPoint = new Point(e);
@@ -185,6 +195,22 @@ export class Api {
 						this.draw();
 
 						break;
+
+					case SceneSteps.scale:
+						if (!scale) {
+							const [shape] = this.state.shapes.active;
+
+							scale = new Scale(1, 1, start);
+
+							shape.transforms.push(scale);
+						}
+
+						scale.sx = Math.abs(e.x - start.x) / startBound.w;
+						scale.sy = Math.abs(e.y - start.y) / startBound.h;
+
+						this.draw();
+
+						break;
 				}
 			});
 	}
@@ -204,7 +230,11 @@ export class Api {
 		const mouseEvent = (e: MouseEvent) => {
 			const rect = container.getBoundingClientRect();
 
+			e.preventDefault();
+
 			this.events.fire(e.type, {
+				type: e.type,
+				api: this,
 				x: e.clientX - rect.left,
 				y: e.clientY - rect.top
 			});
@@ -244,12 +274,10 @@ export class Api {
 			layer.draw(this.render, drawOptions);
 		});
 
-		this.state.shapes.active.forEach(shape =>
-			shape.manager.draw(this.render, cursor)
-		);
-
-		if (cursor.draw) {
-			this.render.drawCursor(cursor);
+		if (this.state.mode !== Modes.draw) {
+			this.state.shapes.active.forEach(shape =>
+				shape.manager.draw(this.render, cursor)
+			);
 		}
 
 		const text = this.debugInfo();

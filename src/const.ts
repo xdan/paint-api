@@ -7,3 +7,5 @@ export const MODE_NOPE = Modes.nope;
 export const TRANSFORM_GEOMETRY = TransformType.geometry;
 export const TRANSFORM_STYLE = TransformType.style;
 export const TRANSFORM_BOTH = TransformType.both;
+
+export const HANDLE_RADIUS = 4;

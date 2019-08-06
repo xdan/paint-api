@@ -1,8 +1,12 @@
 import { IPoint } from './geometry';
-import { IDictionary } from "./global";
+import { IApi } from './api';
+import { IShape } from './shape';
 
 export interface ISyntheticEvent {
 	type: keyof EventTypes;
+	api: IApi;
+	shape?: IShape;
+	corner?: IPoint;
 }
 
 export interface IMouseSyntheticEvent extends ISyntheticEvent, IPoint {}
@@ -16,14 +20,16 @@ export interface EventTypes {
 	mouseup: IMouseSyntheticEvent;
 	mousedown: IMouseSyntheticEvent;
 	mousemove: IMouseSyntheticEvent;
+	cornerMousedown: IMouseSyntheticEvent;
 	[key: string]: ISyntheticEvent;
 }
 
 export interface RequiredParamsList {
-	mouseup: IPoint;
-	mousedown: IPoint;
-	mousemove: IPoint;
-	[key: string]: any;
+	mouseup: IMouseSyntheticEvent;
+	mousedown: IMouseSyntheticEvent;
+	mousemove: IMouseSyntheticEvent;
+	cornerMousedown: IMouseSyntheticEvent;
+	[key: string]: IMouseSyntheticEvent;
 }
 
 export interface IEventer<T> {
@@ -34,6 +40,7 @@ export interface IEventer<T> {
 
 	fire<K extends keyof EventTypes>(
 		event: K,
-		arg: RequiredParamsList[K]
+		arg: RequiredParamsList[K],
+		...args: any[]
 	): IEventer<T>;
 }

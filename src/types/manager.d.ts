@@ -2,6 +2,7 @@ import { IStyle } from './style';
 import { IRender } from './render';
 import { IShape } from './shape';
 import { IPoint } from './geometry';
+import { EventTypes, ISyntheticEvent } from './event';
 
 export interface IManager {
 	shape: IShape;
@@ -13,4 +14,5 @@ export interface IManager {
 	};
 
 	draw(render: IRender, cursor: IPoint): void;
+	fire(eventName: keyof EventTypes, e: ISyntheticEvent): void;
 }

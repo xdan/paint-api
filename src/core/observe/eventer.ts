@@ -6,25 +6,21 @@ import {
 	RequiredParamsList
 } from '../../types';
 
+type ListenStore<T> = IDictionary<Array<Handler<T>>>;
+
 export class Eventer<T> implements IEventer<T> {
 	constructor(readonly host: T) {}
-
-	private state = {
-		// tslint:disable-next-line:no-object-literal-type-assertion
-		listeners: {} as IDictionary<Array<Handler<T>>>
-	};
+	private listeners: ListenStore<T> = {};
 
 	on<K extends keyof EventTypes>(
 		event: K,
 		callback: Handler<T, EventTypes[K]>
 	): Eventer<T> {
-		const { listeners } = this.state;
-
-		if (!listeners[event]) {
-			listeners[event] = [];
+		if (!this.listeners[event]) {
+			this.listeners[event] = [];
 		}
 
-		listeners[event].push(callback);
+		this.listeners[event].push(callback);
 
 		return this;
 	}
@@ -33,10 +29,8 @@ export class Eventer<T> implements IEventer<T> {
 		event: K,
 		args: RequiredParamsList[K]
 	): Eventer<T> {
-		const { listeners } = this.state;
-
-		if (listeners[event]) {
-			listeners[event].forEach(callback =>
+		if (this.listeners[event]) {
+			this.listeners[event].forEach(callback =>
 				callback.call(this.host, {
 					type: event,
 					...args

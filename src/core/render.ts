@@ -78,7 +78,20 @@ export class Render implements IRender {
 
 	drawCircle(round: IRound, fill: boolean = false): void {
 		this.context.beginPath();
-		this.context.arc(round.x, round.y, round.r, 0, 2 * Math.PI);
+
+		if (round.r === round.rv || !round.rv) {
+			this.context.arc(round.x, round.y, round.r, 0, 2 * Math.PI);
+		} else {
+			this.context.ellipse(
+				round.x,
+				round.y,
+				round.r,
+				round.rv,
+				0,
+				0,
+				2 * Math.PI
+			);
+		}
 
 		if (fill) {
 			this.context.fill();

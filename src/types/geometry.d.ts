@@ -10,6 +10,7 @@ export interface IPoint {
 
 export interface IRound extends IPoint {
 	r: number;
+	rv?: number;
 }
 
 export interface IBound extends IPoint {

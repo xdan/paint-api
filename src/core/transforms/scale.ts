@@ -42,36 +42,32 @@ export class Scale extends Transform implements ITransform {
 		const g = r.geometry,
 			origin: IPoint = this.origin || g.center;
 
-		if (g instanceof Round) {
-			return {
-				...r,
-				geometry: new Round(
-					g.x,
-					g.y,
-					g.r + Math.sqrt(Math.pow(this.sx, 2) + Math.pow(this.sy, 2))
-				)
-			};
-		}
-
-		if (g instanceof Bound) {
-			const s: Matrix2x2 = [[this.sx, 0], [0, this.sy]],
+		if (g instanceof Round || g instanceof Bound) {
+			const w: number = g instanceof Round ? g.r : g.w,
+				h: number = g instanceof Round ? g.rv : g.h,
+				s: Matrix2x2 = [[this.sx, 0], [0, this.sy]],
 				start: Matrix2x2 = [[g.x - origin.x, 0], [g.y - origin.y, 0]],
 				end: Matrix2x2 = [
-					[g.x - origin.x + g.w, 0],
-					[g.y - origin.y + g.h, 0]
+					[g.x - origin.x + w, 0],
+					[g.y - origin.y + h, 0]
 				];
 
 			this.findNewCoordinate(s, start);
 			this.findNewCoordinate(s, end);
 
+			const params = [
+				start[0][0] + origin.x,
+				start[1][0] + origin.y,
+				end[0][0] + origin.x - (start[0][0] + origin.x),
+				end[1][0] + origin.y - (start[1][0] + origin.y)
+			];
+
 			return {
 				...r,
-				geometry: new Bound(
-					start[0][0] + origin.x,
-					start[1][0] + origin.y,
-					end[0][0] + origin.x - (start[0][0] + origin.x),
-					end[1][0] + origin.y - (start[1][0] + origin.y)
-				)
+				geometry:
+					g instanceof Round
+						? new Round(params[0], params[1], params[2], params[3])
+						: new Bound(params[0], params[1], params[2], params[3])
 			};
 		}
 

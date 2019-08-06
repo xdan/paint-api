@@ -35,7 +35,7 @@ export class Translate extends Transform implements ITransform, IPoint {
 		if (g instanceof Round) {
 			return {
 				...r,
-				geometry: new Round(this.x + g.x, this.y + g.y, g.r)
+				geometry: new Round(this.x + g.x, this.y + g.y, g.r, g.rv)
 			};
 		}
 

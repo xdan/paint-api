@@ -1,4 +1,13 @@
-import { IRender, ILayer, DrawOptions, IShape } from '../types';
+import {
+	IRender,
+	ILayer,
+	DrawOptions,
+	IShape,
+	EventTypes,
+	IMouseSyntheticEvent
+} from '../types';
+import { isInBound } from './helpers/';
+import { HANDLE_RADIUS } from '../const';
 
 export class Layer implements ILayer {
 	shapes: IShape[];
@@ -14,6 +23,14 @@ export class Layer implements ILayer {
 	draw(render: IRender, opt: DrawOptions): void {
 		this.shapes.forEach(shape => {
 			shape.draw(render, opt);
+		});
+	}
+
+	fire(eventName: keyof EventTypes, e: IMouseSyntheticEvent): void {
+		this.shapes.forEach(shape => {
+			if (isInBound(e, shape.bound, HANDLE_RADIUS)) {
+				shape.fire(eventName, e);
+			}
 		});
 	}
 }

@@ -5,20 +5,24 @@ import {
 	ITransform,
 	IGeometry,
 	IStyle,
-	IManager
+	IManager,
+	EventTypes,
+	IBound,
+	IMouseSyntheticEvent
 } from '../types';
 import { Transform } from './transform';
 import { TRANSFORM_GEOMETRY, TRANSFORM_STYLE } from '../const';
 import { Manager } from './manager';
-import { Layer } from './layer';
 
-export abstract class Shape<G extends IGeometry> extends Layer
-	implements IShape {
+export abstract class Shape<G extends IGeometry> implements IShape {
+	get bound(): IBound {
+		return this.geometry.bound;
+	}
+
 	manager: IManager;
 	transforms: ITransform[] = [];
 
-	protected constructor(shapes: IShape[] = []) {
-		super(shapes);
+	protected constructor() {
 		this.manager = new Manager(this);
 	}
 
@@ -61,7 +65,9 @@ export abstract class Shape<G extends IGeometry> extends Layer
 		render.setStyle(this.style);
 		this.drawGeometry(render, opt);
 		render.resetStyle();
+	}
 
-		super.draw(render, opt);
+	fire(eventName: keyof EventTypes, e: IMouseSyntheticEvent): void {
+		this.manager.fire(eventName, e);
 	}
 }

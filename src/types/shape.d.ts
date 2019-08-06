@@ -1,11 +1,13 @@
-import { ILayer } from './layer';
+import { ILayerBox } from './layer';
 import { DrawOptions, IRender } from './render';
-import { IGeometry } from './geometry';
+import { IBound, IGeometry } from './geometry';
 import { ITransform } from './transform';
 import { IStyle } from './style';
 import { IManager } from './manager';
 
-export interface IShape extends ILayer {
+export interface IShape extends ILayerBox {
+	bound: IBound;
+
 	manager: IManager;
 	transforms: ITransform[];
 

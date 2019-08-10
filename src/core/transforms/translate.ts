@@ -1,10 +1,9 @@
-import { IShapeRecord, IPoint, ITransform, TransformType } from '../../types';
-import { Transform } from '../transform';
+import { IShapeRecord, IPoint, IGeometryTransform } from '../../types';
+import { GeometryTransform } from '../transform';
 import { Bound, Multipoint, Point, Round } from '../geometries';
 
-export class Translate extends Transform implements ITransform, IPoint {
-	type: TransformType = TransformType.geometry;
-
+export class Translate extends GeometryTransform
+	implements IGeometryTransform, IPoint {
 	x: number;
 	y: number;
 

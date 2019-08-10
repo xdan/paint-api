@@ -1,6 +1,6 @@
 import { ILayer } from './layer';
 import { IObservableArray } from './array';
-import { IPoint } from './geometry';
+import { IGeometry, IPoint } from './geometry';
 import { IShape } from './shape';
 
 export const enum SceneSteps {
@@ -21,6 +21,10 @@ export interface IState {
 
 	width: number;
 	height: number;
+
+	zoom: number;
+	offset: [number, number];
+	selection: null | IGeometry;
 
 	step: SceneSteps;
 	mode: Modes;

@@ -1,9 +1,7 @@
-import { Transform } from '../transform';
-import { IShapeRecord, ITransform, TransformType } from '../../types';
-import { TRANSFORM_STYLE } from '../../const';
+import { StyleTransform } from '../transform';
+import { IShapeRecord, IStyleTransform } from '../../types';
 
-export class StrokeWidth extends Transform implements ITransform {
-	type: TransformType = TRANSFORM_STYLE;
+export class StrokeWidth extends StyleTransform implements IStyleTransform {
 	strokeWidth: number = 1;
 
 	constructor(strokeWidth: number) {

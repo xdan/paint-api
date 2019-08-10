@@ -1,12 +1,12 @@
 import { IShapeRecord } from './shape';
 
-export const enum TransformType {
-	geometry,
-	style,
-	both
-}
-
 export interface ITransform {
-	type: TransformType;
 	apply(record: IShapeRecord): IShapeRecord;
 }
+
+export interface IGeometryTransform extends ITransform {
+	x: number;
+	y: number;
+}
+
+export interface IStyleTransform extends ITransform {}

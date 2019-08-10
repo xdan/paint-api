@@ -1,19 +1,13 @@
-import { IShapeRecord, ITransform, TransformType } from '../types';
+import { IShapeRecord, IStyleTransform, ITransform } from '../types';
 
 export abstract class Transform implements ITransform {
-	abstract type: TransformType;
-
 	static apply(
 		transforms: ITransform[],
 		record: IShapeRecord,
-		type: TransformType
+		type: typeof Transform = GeometryTransform
 	): IShapeRecord {
 		return transforms
-			.filter(
-				transform =>
-					transform.type === type ||
-					transform.type === TransformType.both
-			)
+			.filter(transform => transform instanceof type)
 			.reduce(
 				(record, transformation) => transformation.apply(record),
 				record
@@ -22,3 +16,9 @@ export abstract class Transform implements ITransform {
 
 	abstract apply(geometry: IShapeRecord): IShapeRecord;
 }
+
+export abstract class StyleTransform extends Transform
+	implements IStyleTransform {}
+
+export abstract class GeometryTransform extends Transform
+	implements IStyleTransform {}

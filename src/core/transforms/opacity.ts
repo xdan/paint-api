@@ -1,9 +1,7 @@
-import { Transform } from '../transform';
-import { IShapeRecord, ITransform, TransformType } from '../../types';
-import { TRANSFORM_STYLE } from '../../const';
+import { StyleTransform } from '../transform';
+import { IShapeRecord, IStyleTransform } from '../../types';
 
-export class Opacity extends Transform implements ITransform {
-	type: TransformType = TRANSFORM_STYLE;
+export class Opacity extends StyleTransform implements IStyleTransform {
 	opacity: number = 1;
 
 	constructor(opacity: number) {

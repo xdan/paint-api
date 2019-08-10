@@ -10,8 +10,7 @@ import {
 	IBound,
 	IMouseSyntheticEvent
 } from '../types';
-import { Transform } from './transform';
-import { TRANSFORM_GEOMETRY, TRANSFORM_STYLE } from '../const';
+import { GeometryTransform, StyleTransform, Transform } from './transform';
 import { Manager } from './manager';
 
 export abstract class Shape<G extends IGeometry> implements IShape {
@@ -40,7 +39,7 @@ export abstract class Shape<G extends IGeometry> implements IShape {
 				geometry: this.__geometry,
 				style: this.style
 			},
-			TRANSFORM_GEOMETRY
+			GeometryTransform
 		).geometry as G;
 	}
 
@@ -55,7 +54,7 @@ export abstract class Shape<G extends IGeometry> implements IShape {
 				geometry: this.__geometry,
 				style: this.__style
 			},
-			TRANSFORM_STYLE
+			StyleTransform
 		).style;
 	}
 

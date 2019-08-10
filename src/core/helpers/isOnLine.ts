@@ -15,11 +15,17 @@ export function isOnLine(
 		): true | void => {
 			if (Math.abs(p[direct] - start[direct]) <= tolerance) {
 				if (start[qDirect] > end[qDirect]) {
-					if (p[qDirect] <= start[qDirect] && p[qDirect] >= end[qDirect]) {
+					if (
+						p[qDirect] <= start[qDirect] &&
+						p[qDirect] >= end[qDirect]
+					) {
 						return true;
 					}
 				} else {
-					if (p[qDirect] >= start[qDirect] && p[qDirect] <= end[qDirect]) {
+					if (
+						p[qDirect] >= start[qDirect] &&
+						p[qDirect] <= end[qDirect]
+					) {
 						return true;
 					}
 				}

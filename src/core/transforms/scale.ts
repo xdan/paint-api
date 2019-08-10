@@ -1,25 +1,22 @@
 import {
+	IGeometryTransform,
 	IPoint,
 	IShapeRecord,
-	ITransform,
-	Matrix2x2,
-	TransformType
+	Matrix2x2
 } from '../../types';
-import { Transform } from '../transform';
+import { GeometryTransform } from '../transform';
 import { Bound, Multipoint, Point, Round } from '../geometries';
 
-export class Scale extends Transform implements ITransform {
-	type: TransformType = TransformType.geometry;
-
-	sx: number;
-	sy: number;
+export class Scale extends GeometryTransform implements IGeometryTransform {
+	x: number;
+	y: number;
 	origin?: IPoint;
 
 	constructor(sx: number, sy: number, origin?: IPoint) {
 		super();
 
-		this.sx = sx;
-		this.sy = sy;
+		this.x = sx;
+		this.y = sy;
 		this.origin = origin;
 	}
 
@@ -45,7 +42,7 @@ export class Scale extends Transform implements ITransform {
 		if (g instanceof Round || g instanceof Bound) {
 			const w: number = g instanceof Round ? g.r : g.w,
 				h: number = g instanceof Round ? g.rv : g.h,
-				s: Matrix2x2 = [[this.sx, 0], [0, this.sy]],
+				s: Matrix2x2 = [[this.x, 0], [0, this.y]],
 				start: Matrix2x2 = [[g.x - origin.x, 0], [g.y - origin.y, 0]],
 				end: Matrix2x2 = [
 					[g.x - origin.x + w, 0],
@@ -72,7 +69,7 @@ export class Scale extends Transform implements ITransform {
 		}
 
 		if (g instanceof Multipoint) {
-			const s: Matrix2x2 = [[this.sx, 0], [0, this.sy]],
+			const s: Matrix2x2 = [[this.x, 0], [0, this.y]],
 				ng = new Multipoint();
 
 			g.forEach(point => {

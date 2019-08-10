@@ -1,4 +1,16 @@
-import { IBound, IDictionary, IEventer, IMouseSyntheticEvent, IPoint, IRender, IShape, IState, Modes, SceneSteps } from '../types';
+import {
+	IBound,
+	IDictionary,
+	IEventer,
+	IGeometryTransform,
+	IMouseSyntheticEvent,
+	IPoint,
+	IRender,
+	IShape,
+	IState,
+	Modes,
+	SceneSteps
+} from '../types';
 import { Render } from './render';
 import { Eventer } from './observe/eventer';
 import { Shape } from './shape';
@@ -11,16 +23,16 @@ import { Layer } from './layer';
 import { Scale, Translate } from './transforms';
 import { Point } from './geometries';
 import { getOppositeCorner } from './helpers/getOppositeCorner';
-// import { Translate } from './transforms';
-// import { Polyline } from '../shapes';
-// import { Layer } from './layer';
-// import { Point } from './geometries';
 
 export class Api implements IApi {
 	render: IRender;
 	events: IEventer<IApi> = new Eventer(this);
 
 	state: IState = {
+		zoom: 1,
+		offset: [0, 0],
+		selection: null,
+
 		mode: Modes.select,
 		step: SceneSteps.nope,
 
@@ -93,8 +105,7 @@ export class Api implements IApi {
 			this.draw();
 		};
 
-		let scale: null | Scale = null,
-			translate: null | Translate = null,
+		let transform: null | IGeometryTransform = null,
 			shape: null | Polyline = null,
 			lastPoint: null | IPoint = null,
 			startBound: IBound = { x: 0, y: 0, w: 0, h: 0 },
@@ -118,8 +129,7 @@ export class Api implements IApi {
 			.on('mouseup', e => {
 				this.state.step = SceneSteps.nope;
 
-				translate = null;
-				scale = null;
+				transform = null;
 				shape = null;
 				lastPoint = null;
 
@@ -139,6 +149,8 @@ export class Api implements IApi {
 					}
 
 					case Modes.select: {
+						this.state.shapes.active = [];
+
 						this.state.layers.forEach(layer =>
 							layer.fire('mousedown', e)
 						);
@@ -150,8 +162,9 @@ export class Api implements IApi {
 						this.state.step = SceneSteps.nope;
 				}
 			})
-			.on('mousemove', setCursor)
 			.on('mousemove', e => {
+				setCursor(e);
+
 				switch (this.state.step) {
 					case SceneSteps.draw:
 						if (!shape) {
@@ -181,32 +194,32 @@ export class Api implements IApi {
 						break;
 
 					case SceneSteps.drag:
-						if (!translate) {
-							translate = new Translate(e.x, e.y);
+						if (!transform) {
+							transform = new Translate(e.x, e.y);
 
 							this.state.shapes.active.forEach(shape => {
-								translate && shape.transforms.push(translate);
+								transform && shape.transforms.push(transform);
 							});
 						}
 
-						translate.x = e.x - start.x;
-						translate.y = e.y - start.y;
+						transform.x = e.x - start.x;
+						transform.y = e.y - start.y;
 
 						this.draw();
 
 						break;
 
 					case SceneSteps.scale:
-						if (!scale) {
-							const [shape] = this.state.shapes.active;
+						if (!transform) {
+							transform = new Scale(1, 1, start);
 
-							scale = new Scale(1, 1, start);
-
-							shape.transforms.push(scale);
+							this.state.shapes.active.forEach(shape => {
+								transform && shape.transforms.push(transform);
+							});
 						}
 
-						scale.sx = Math.abs(e.x - start.x) / startBound.w;
-						scale.sy = Math.abs(e.y - start.y) / startBound.h;
+						transform.x = Math.abs(e.x - start.x) / startBound.w;
+						transform.y = Math.abs(e.y - start.y) / startBound.h;
 
 						this.draw();
 

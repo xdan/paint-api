@@ -1,4 +1,4 @@
-import { IRGB } from '../types';
+import { IRGB } from '../../types';
 
 export class RGB implements IRGB {
 	r: number;
@@ -37,5 +37,9 @@ export class RGB implements IRGB {
 				.toString(16)
 				.slice(1)
 		);
+	}
+
+	toString(): string {
+		return this.hex;
 	}
 }

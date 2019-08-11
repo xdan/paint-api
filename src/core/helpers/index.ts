@@ -8,4 +8,5 @@ export * from './isInBound';
 export * from './isInRound';
 export * from './isOnLine';
 export * from './mergeDeep';
+export * from './rgb';
 export * from './ucfirst';

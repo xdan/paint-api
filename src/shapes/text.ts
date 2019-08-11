@@ -13,7 +13,7 @@ export class Text extends Shape<Bound> {
 
 		this.value = text;
 
-		this.geometry = new Bound(x, y, 10, 10);
+		this.geometry = new Bound(x, y, 100, fontSize);
 		this.style.font.size = fontSize;
 	}
 
@@ -22,7 +22,6 @@ export class Text extends Shape<Bound> {
 		this.geometry.w = size.w;
 		this.geometry.h = size.h;
 
-		console.log(this.geometry);
 		render.drawText(this.geometry, this.value);
 	}
 }

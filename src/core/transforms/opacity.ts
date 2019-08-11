@@ -11,12 +11,13 @@ export class Opacity extends StyleTransform implements IStyleTransform {
 
 	apply(record: IShapeRecord): IShapeRecord {
 		if (record.style.opacity !== this.opacity) {
+			const style = record.style.clone();
+
+			style.opacity = this.opacity;
+
 			return {
 				...record,
-				style: {
-					...record.style,
-					opacity: this.opacity
-				}
+				style
 			};
 		}
 

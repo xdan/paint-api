@@ -4,12 +4,19 @@ export interface IRGB {
 	b: number;
 	hex: string;
 	set(r: number, g: number, b: number): void;
+	toString(): string;
 }
 
 export interface IFont {
 	size: number;
 	family: string;
 	style: 'normal' | 'italic' | 'bold';
+
+	set(
+		size: number,
+		family: string,
+		style: 'normal' | 'italic' | 'bold'
+	): void;
 
 	toString(): string;
 }
@@ -35,4 +42,5 @@ export interface IStyle {
 	dash: [number, number] | [];
 	textBaseline: 'alphabetic' | 'top' | 'middle' | 'bottom' | 'hanging';
 	font: IFont;
+	clone(): IStyle;
 }

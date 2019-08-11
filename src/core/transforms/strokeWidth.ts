@@ -11,12 +11,13 @@ export class StrokeWidth extends StyleTransform implements IStyleTransform {
 
 	apply(record: IShapeRecord): IShapeRecord {
 		if (record.style.strokeWidth !== this.strokeWidth) {
+			const style = record.style.clone();
+
+			style.strokeWidth = this.strokeWidth;
+
 			return {
 				...record,
-				style: {
-					...record.style,
-					strokeWidth: this.strokeWidth
-				}
+				style
 			};
 		}
 

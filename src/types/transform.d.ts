@@ -11,3 +11,4 @@ export interface IGeometryTransform extends ITransform {
 }
 
 export interface IStyleTransform extends ITransform {}
+export interface IBothTransform extends IStyleTransform, IGeometryTransform {}

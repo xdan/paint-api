@@ -1,4 +1,5 @@
 import {
+	IBothTransform,
 	IGeometryTransform,
 	IShapeRecord,
 	IStyleTransform,
@@ -12,7 +13,11 @@ export abstract class Transform implements ITransform {
 		type: typeof Transform = GeometryTransform
 	): IShapeRecord {
 		return transforms
-			.filter(transform => transform instanceof type)
+			.filter(
+				transform =>
+					transform instanceof type ||
+					transform instanceof BothTransform
+			)
 			.reduce(
 				(record, transformation) => transformation.apply(record),
 				record
@@ -35,3 +40,6 @@ export abstract class GeometryTransform extends Transform
 		this.y = sy;
 	}
 }
+
+export abstract class BothTransform extends GeometryTransform
+	implements IBothTransform {}

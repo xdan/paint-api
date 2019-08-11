@@ -122,7 +122,6 @@ export class Api implements IApi {
 					this.state.shapes.active = [e.shape];
 					start = getOppositeCorner(e.shape.bound, e.corner);
 					startBound = e.shape.bound;
-					console.log('crnr', e.corner.x);
 				}
 			})
 			.on('shapeMousedown', e => {

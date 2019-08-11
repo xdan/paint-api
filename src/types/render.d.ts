@@ -24,6 +24,7 @@ export interface IRender {
 	drawCursor(point: IPoint): void;
 
 	drawText(point: IPoint, text: string): void;
+	measureText(text: string): IBound;
 }
 
 export interface DrawOptions {}

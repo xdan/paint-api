@@ -24,7 +24,7 @@
 <script>
 	const
 		api = new PaintApi(),
-		{ Bitmap, Circle, Rectangle, Polyline } = PaintApi.Shapes,
+		{ Bitmap, Circle, Rectangle, Polyline, Text } = PaintApi.Shapes,
 		{ Translate, Scale, Opacity, StrokeWidth } = PaintApi.Transforms;
 
 	let i = 0, image = new Image();
@@ -34,6 +34,7 @@
 	api.state.layers.push(new PaintApi.Layer(api, [
 		new Bitmap(image, i + 1, i + 1, i + 100, i + 100),
 		new Circle(i + 100, i + 100, i + 10),
+		new Text('Mario', i + 100, i + 100, 100, 100),
 		new Rectangle(i, i, i + 10, i + 10),
 		new Polyline([
 			[110 + i, 20 + i],

@@ -170,21 +170,36 @@ export class Render implements IRender {
 
 	drawText({ x, y }: IPoint, text: string): void {
 		if (x < 0) {
-			const metrics = this.context.measureText(text);
-
-			x += this.state.width - metrics.width;
+			x += this.state.width - this.measureText(text).w;
 		}
 
 		this.context.fillText(text, x, y);
 	}
 
+	measureText(text: string): IBound {
+		const metrics = this.context.measureText(text);
+
+		return {
+			x: 0,
+			y: 0,
+			w: metrics.width,
+			h: this.currentStyle.font.size
+		};
+	}
+
 	private defaultStyle = new Style();
 
+	private currentStyle: IStyle;
+
 	setStyle(style: IStyle): void {
+		this.currentStyle = style;
+
 		this.context.strokeStyle = style.color.hex;
 		this.context.fillStyle = style.fillColor.hex;
 		this.context.lineWidth = style.strokeWidth;
 		this.context.lineCap = style.lineCap;
+		this.context.font = style.font.toString();
+		this.context.textBaseline = style.textBaseline;
 		this.context.globalAlpha = 1 - style.opacity;
 		this.context.setLineDash(style.dash);
 	}

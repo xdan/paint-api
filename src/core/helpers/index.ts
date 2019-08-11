@@ -1,5 +1,6 @@
 export * from './async';
 export * from './distanceBetween';
+export * from './font';
 export * from './getBoundByMultiline';
 export * from './getOppositeCorner';
 export * from './isDictionary';

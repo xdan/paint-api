@@ -1,5 +1,6 @@
 import { IStyle, IStyleRaw } from '../types/';
 import { RGB } from './rgb';
+import { Font } from './helpers';
 
 export class Style implements IStyle {
 	color = new RGB();
@@ -8,6 +9,9 @@ export class Style implements IStyle {
 	strokeWidth = 1;
 	lineCap: 'butt' | 'round' | 'square' = 'round';
 	dash: [number, number] | [] = [];
+	textBaseline: 'alphabetic' | 'top' | 'middle' | 'bottom' | 'hanging' =
+		'top';
+	font = new Font();
 
 	constructor(raw?: IStyleRaw) {
 		if (raw) {

@@ -8,11 +8,9 @@ import { GeometryTransform } from '../transform';
 import { Bound, Multipoint, Point, Round } from '../geometries';
 
 export class Scale extends GeometryTransform implements IGeometryTransform {
-	x: number;
-	y: number;
 	origin?: IPoint;
 
-	constructor(sx: number, sy: number, origin?: IPoint) {
+	constructor(sx: number = 1, sy: number = sx, origin?: IPoint) {
 		super();
 
 		this.x = sx;
@@ -36,8 +34,12 @@ export class Scale extends GeometryTransform implements IGeometryTransform {
 	}
 
 	apply(r: IShapeRecord): IShapeRecord {
+		if (this.x === 1 && this.y === 1) {
+			return r;
+		}
+
 		const g = r.geometry,
-			origin: IPoint = this.origin || g.center;
+			origin: IPoint = this.origin || g.bound;
 
 		if (g instanceof Round || g instanceof Bound) {
 			const w: number = g instanceof Round ? g.r : g.w,

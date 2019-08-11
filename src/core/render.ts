@@ -60,6 +60,10 @@ export class Render implements IRender {
 		this.container.style.height = height + 'px';
 	}
 
+	setZoom(value: number): void {
+		this.context.scale(value, value);
+	}
+
 	setSize(width: number, height: number) {
 		if (width !== this.state.width || height !== this.state.height) {
 			this.changeSize(width, height);

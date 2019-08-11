@@ -1,18 +1,22 @@
-import { ILayerBox } from './layer';
+import { ILayer, IContainer } from './layer';
 import { DrawOptions, IRender } from './render';
 import { IBound, IGeometry } from './geometry';
-import { ITransform } from './transform';
 import { IStyle } from './style';
 import { IManager } from './manager';
 
-export interface IShape extends ILayerBox {
+export interface IShape extends IContainer {
 	bound: IBound;
 
 	manager: IManager;
-	transforms: ITransform[];
 
 	geometry: IGeometry;
 	style: IStyle;
+
+	readonly simpleStyle: IStyle;
+	readonly simpleGeometry: IGeometry;
+
+	layer: ILayer | null;
+	setLayer(layer: ILayer | null): void;
 
 	drawGeometry(render: IRender, opt: DrawOptions): void;
 }

@@ -4,10 +4,7 @@ import { Bound, Multipoint, Point, Round } from '../geometries';
 
 export class Translate extends GeometryTransform
 	implements IGeometryTransform, IPoint {
-	x: number;
-	y: number;
-
-	constructor(x: number, y: number) {
+	constructor(x: number = 0, y: number = 0) {
 		super();
 
 		this.x = x;
@@ -15,6 +12,10 @@ export class Translate extends GeometryTransform
 	}
 
 	apply(r: IShapeRecord): IShapeRecord {
+		if (this.x === 0 && this.y === 0) {
+			return r;
+		}
+
 		const g = r.geometry;
 
 		if (g instanceof Bound) {

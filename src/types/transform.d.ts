@@ -7,6 +7,7 @@ export interface ITransform {
 export interface IGeometryTransform extends ITransform {
 	x: number;
 	y: number;
+	setValue(sx: number, sy: number): void;
 }
 
 export interface IStyleTransform extends ITransform {}

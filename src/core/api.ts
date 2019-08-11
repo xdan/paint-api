@@ -3,7 +3,6 @@ import {
 	IDictionary,
 	IEventer,
 	IGeometryTransform,
-	IMouseSyntheticEvent,
 	IPoint,
 	IRender,
 	IShape,
@@ -16,13 +15,17 @@ import { Eventer } from './observe/eventer';
 import { Shape } from './shape';
 import { Geometry } from './geometry';
 import { Transform } from './transform';
-import { distanceBetween, isInBound, mergeDeep } from './helpers';
-import { IApi } from '../types/api';
+import {
+	distanceBetween,
+	getOppositeCorner,
+	isInBound,
+	mergeDeep
+} from './helpers';
+import { IApi } from '../types/';
 import { Polyline } from '../shapes';
 import { Layer } from './layer';
-import { Scale, Translate } from './transforms';
+import { Scale, Translate, Zoom } from './transforms';
 import { Point } from './geometries';
-import { getOppositeCorner } from './helpers/getOppositeCorner';
 
 export class Api implements IApi {
 	render: IRender;
@@ -99,7 +102,7 @@ export class Api implements IApi {
 	}
 
 	protected addMouseListeners() {
-		const setCursor = (e: IMouseSyntheticEvent) => {
+		const setCursor = (e: IPoint) => {
 			this.state.cursor.x = e.x;
 			this.state.cursor.y = e.y;
 			this.draw();
@@ -108,6 +111,7 @@ export class Api implements IApi {
 		let transform: null | IGeometryTransform = null,
 			shape: null | Polyline = null,
 			lastPoint: null | IPoint = null,
+			oldOffset = [0, 0],
 			startBound: IBound = { x: 0, y: 0, w: 0, h: 0 },
 			start: IPoint = { x: 0, y: 0 };
 
@@ -118,6 +122,7 @@ export class Api implements IApi {
 					this.state.shapes.active = [e.shape];
 					start = getOppositeCorner(e.shape.bound, e.corner);
 					startBound = e.shape.bound;
+					console.log('crnr', e.corner.x);
 				}
 			})
 			.on('shapeMousedown', e => {
@@ -155,6 +160,11 @@ export class Api implements IApi {
 							layer.fire('mousedown', e)
 						);
 
+						if (!this.state.shapes.active.length) {
+							oldOffset = [...this.state.offset];
+							this.state.step = SceneSteps.dragMap;
+						}
+
 						break;
 					}
 
@@ -163,26 +173,30 @@ export class Api implements IApi {
 				}
 			})
 			.on('mousemove', e => {
+				const { offset, zoom } = this.state;
+				const x = e.x / zoom - offset[0],
+					y = e.y / zoom - offset[1];
+
 				setCursor(e);
 
 				switch (this.state.step) {
 					case SceneSteps.draw:
 						if (!shape) {
-							shape = new Polyline([e]);
-							const layer = new Layer();
+							shape = new Polyline([[x, y]]);
+							const layer = new Layer(this);
 							this.state.layers.push(layer);
 							layer.add(shape);
 
 							this.state.shapes.active = [shape];
 						} else {
 							if (!lastPoint) {
-								lastPoint = new Point(e);
-								shape.geometry.push(lastPoint);
+								lastPoint = new Point(x, y);
+								shape.simpleGeometry.push(lastPoint);
 								start = e;
 							}
 
-							lastPoint.x = e.x;
-							lastPoint.y = e.y;
+							lastPoint.x = x;
+							lastPoint.y = y;
 
 							if (distanceBetween(e, start) > 5) {
 								lastPoint = null;
@@ -193,25 +207,34 @@ export class Api implements IApi {
 
 						break;
 
+					case SceneSteps.dragMap:
+						this.state.offset = [
+							(e.x - start.x) / zoom + oldOffset[0],
+							(e.y - start.y) / zoom + oldOffset[1]
+						];
+
+						break;
+
 					case SceneSteps.drag:
 						if (!transform) {
-							transform = new Translate(e.x, e.y);
+							transform = new Translate(x, y);
 
 							this.state.shapes.active.forEach(shape => {
 								transform && shape.transforms.push(transform);
 							});
 						}
 
-						transform.x = e.x - start.x;
-						transform.y = e.y - start.y;
-
-						this.draw();
+						transform.x = (e.x - start.x) / zoom;
+						transform.y = (e.y - start.y) / zoom;
 
 						break;
 
 					case SceneSteps.scale:
 						if (!transform) {
-							transform = new Scale(1, 1, start);
+							transform = new Scale(1, 1, {
+								x: start.x / zoom - offset[0],
+								y: start.y / zoom - offset[1]
+							});
 
 							this.state.shapes.active.forEach(shape => {
 								transform && shape.transforms.push(transform);
@@ -219,9 +242,8 @@ export class Api implements IApi {
 						}
 
 						transform.x = Math.abs(e.x - start.x) / startBound.w;
-						transform.y = Math.abs(e.y - start.y) / startBound.h;
 
-						this.draw();
+						transform.y = Math.abs(e.y - start.y) / startBound.h;
 
 						break;
 				}
@@ -256,6 +278,30 @@ export class Api implements IApi {
 		['mousemove', 'mousedown', 'mouseup'].forEach(eventType => {
 			container.addEventListener(eventType, mouseEvent as any);
 		});
+		let f = 1;
+
+		container.addEventListener('wheel', (e: WheelEvent) => {
+			e.preventDefault();
+
+			if (f > 20000) {
+				return;
+			}
+
+			f++;
+
+			const { cursor, offset, zoom } = this.state;
+			const globalCursor = {
+				x: cursor.x / zoom - offset[0],
+				y: cursor.y / zoom - offset[1]
+			};
+
+			console.log('gc', globalCursor.x);
+
+			this.state.zoom += e.deltaY * -0.01;
+
+			offset[0] = cursor.x / this.state.zoom - globalCursor.x;
+			offset[1] = cursor.y / this.state.zoom - globalCursor.y;
+		});
 
 		container.addEventListener('mouseleave', () => {
 			this.state.cursor.x = -10;
@@ -271,11 +317,30 @@ export class Api implements IApi {
 		});
 	}
 
+	mainTransforms = {
+		zoom: new Zoom(),
+		offset: new Translate()
+	};
+
 	draw() {
+		const {
+			width,
+			height,
+			layers,
+			cursor,
+			zoom,
+			offset,
+			behaviours,
+			mode,
+			shapes
+		} = this.state;
+
+		this.mainTransforms.zoom.setValue(zoom);
+		this.mainTransforms.offset.setValue(offset[0], offset[1]);
+
 		this.render.clear();
 
-		const { width, height, layers, cursor } = this.state,
-			{ selectShapeOnMouseEnter } = this.state.behaviours,
+		const { selectShapeOnMouseEnter } = behaviours,
 			drawOptions = {
 				drawBoundIfInPoint: selectShapeOnMouseEnter,
 				cursor
@@ -287,8 +352,8 @@ export class Api implements IApi {
 			layer.draw(this.render, drawOptions);
 		});
 
-		if (this.state.mode !== Modes.draw) {
-			this.state.shapes.active.forEach(shape =>
+		if (mode !== Modes.draw) {
+			shapes.active.forEach(shape =>
 				shape.manager.draw(this.render, cursor)
 			);
 		}
@@ -298,6 +363,8 @@ export class Api implements IApi {
 		if (text.length) {
 			this.render.drawText({ x: -10, y: 10 }, text);
 		}
+
+		this.render.drawCursor(cursor);
 	}
 
 	protected debugInfo(): string {

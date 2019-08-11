@@ -8,7 +8,9 @@ import {
 	IManager,
 	EventTypes,
 	IBound,
-	IMouseSyntheticEvent
+	IMouseSyntheticEvent,
+	ILayer,
+	IShapeRecord
 } from '../types';
 import { GeometryTransform, StyleTransform, Transform } from './transform';
 import { Manager } from './manager';
@@ -19,6 +21,12 @@ export abstract class Shape<G extends IGeometry> implements IShape {
 	}
 
 	manager: IManager;
+	layer: ILayer | null = null;
+
+	setLayer(layer: ILayer | null): void {
+		this.layer = layer;
+	}
+
 	transforms: ITransform[] = [];
 
 	protected constructor() {
@@ -33,14 +41,24 @@ export abstract class Shape<G extends IGeometry> implements IShape {
 	}
 
 	get geometry(): G {
-		return Transform.apply(
-			this.transforms,
+		return this.applyTransforms(GeometryTransform).geometry as G;
+	}
+
+	get simpleGeometry(): G {
+		return this.__geometry;
+	}
+
+	private applyTransforms(type: typeof Transform): IShapeRecord {
+		return Transform.applyAll(
+			this.layer && this.layer.transforms.length
+				? this.transforms.concat(this.layer.transforms)
+				: this.transforms,
 			{
 				geometry: this.__geometry,
-				style: this.style
+				style: this.__style
 			},
-			GeometryTransform
-		).geometry as G;
+			type
+		);
 	}
 
 	set style(value: IStyle) {
@@ -48,14 +66,11 @@ export abstract class Shape<G extends IGeometry> implements IShape {
 	}
 
 	get style(): IStyle {
-		return Transform.apply(
-			this.transforms,
-			{
-				geometry: this.__geometry,
-				style: this.__style
-			},
-			StyleTransform
-		).style;
+		return this.applyTransforms(StyleTransform).style;
+	}
+
+	get simpleStyle(): IStyle {
+		return this.__style;
 	}
 
 	abstract drawGeometry(render: IRender, opt: DrawOptions): void;

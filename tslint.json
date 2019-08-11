@@ -33,6 +33,7 @@
     "linebreak-style": [true, "LF"],
     "max-line-length": [true, 120],
     "max-classes-per-file": false,
+    "no-this-assignment": false,
 		"variable-name": [
 			false,
 			"ban-keywords",

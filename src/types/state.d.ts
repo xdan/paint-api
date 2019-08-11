@@ -6,6 +6,7 @@ import { IShape } from './shape';
 export const enum SceneSteps {
 	nope,
 	drag,
+	dragMap,
 	scale,
 	draw
 }

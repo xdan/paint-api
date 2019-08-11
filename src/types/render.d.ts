@@ -8,6 +8,7 @@ export interface IRender {
 	setSize(w: number, h: number): void;
 	clear(): void;
 
+	setZoom(value: number): void;
 	setStyle(style: IStyle): void;
 	resetStyle(): void;
 

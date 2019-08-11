@@ -1,6 +1,7 @@
 import { IRender } from './render';
 import { IEventer } from './event';
 import { IState, Modes } from './state';
+import { IGeometryTransform } from './transform';
 
 export interface IApi {
 	render: IRender;
@@ -9,4 +10,9 @@ export interface IApi {
 	setMode(mode: Modes): void;
 	draw(): void;
 	bind(root: HTMLElement): void;
+
+	mainTransforms: {
+		zoom: IGeometryTransform;
+		offset: IGeometryTransform;
+	};
 }

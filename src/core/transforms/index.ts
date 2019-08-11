@@ -1,4 +1,5 @@
-export * from './translate';
-export * from './scale';
 export * from './opacity';
+export * from './scale';
 export * from './strokeWidth';
+export * from './translate';
+export * from './zoom';

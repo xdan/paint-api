@@ -31,7 +31,7 @@
 	image.src = './mario.png';
 
 	api.state.layers = [];
-	api.state.layers.push(new PaintApi.Layer([
+	api.state.layers.push(new PaintApi.Layer(api, [
 		new Bitmap(image, i + 1, i + 1, i + 100, i + 100),
 		new Circle(i + 100, i + 100, i + 10),
 		new Rectangle(i, i, i + 10, i + 10),

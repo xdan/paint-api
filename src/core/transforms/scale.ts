@@ -65,14 +65,26 @@ export class Scale extends GeometryTransform implements IGeometryTransform {
 				...r,
 				geometry:
 					g instanceof Round
-						? new Round(params[0], params[1], params[2], params[3])
-						: new Bound(params[0], params[1], params[2], params[3])
+						? new Round(
+								params[0],
+								params[1],
+								params[2],
+								params[3],
+								g.angle
+						  )
+						: new Bound(
+								params[0],
+								params[1],
+								params[2],
+								params[3],
+								g.angle
+						  )
 			};
 		}
 
 		if (g instanceof Multipoint) {
 			const s: Matrix2x2 = [[this.x, 0], [0, this.y]],
-				ng = new Multipoint();
+				ng = new Multipoint(undefined, g.angle);
 
 			g.forEach(point => {
 				const p: Matrix2x2 = [

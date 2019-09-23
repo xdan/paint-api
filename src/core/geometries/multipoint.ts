@@ -9,7 +9,9 @@ import { Point } from './point';
 import { getBoundByMultiline } from '../helpers/';
 
 export class Multipoint extends Array implements IPolyline, IGeometry {
-	constructor(points?: PointVariant[]) {
+	angle: number;
+
+	constructor(points?: PointVariant[], angle: number = 0) {
 		super();
 
 		if (points) {
@@ -17,6 +19,8 @@ export class Multipoint extends Array implements IPolyline, IGeometry {
 				this.push(point instanceof Point ? point : new Point(point));
 			});
 		}
+
+		this.angle = angle;
 
 		Object.setPrototypeOf(this, Object.create(Multipoint.prototype));
 	}
@@ -32,5 +36,13 @@ export class Multipoint extends Array implements IPolyline, IGeometry {
 			x: bound.x + Math.round(bound.w / 2),
 			y: bound.y + Math.round(bound.h / 2)
 		};
+	}
+
+	clone(): IGeometry {
+		const geometry = {};
+
+		Object.setPrototypeOf(geometry, this);
+
+		return geometry as IGeometry;
 	}
 }

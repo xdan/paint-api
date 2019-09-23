@@ -1,6 +1,9 @@
-export interface IGeometry {
+export abstract class IGeometry {
+	angle: number;
 	bound: IBound;
 	center: IPoint;
+
+	clone(): IGeometry;
 }
 
 export interface IPoint {

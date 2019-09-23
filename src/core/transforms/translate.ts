@@ -21,7 +21,7 @@ export class Translate extends GeometryTransform
 		if (g instanceof Bound) {
 			return {
 				...r,
-				geometry: new Bound(this.x + g.x, this.y + g.y, g.w, g.h)
+				geometry: new Bound(this.x + g.x, this.y + g.y, g.w, g.h, g.angle)
 			};
 		}
 
@@ -35,12 +35,18 @@ export class Translate extends GeometryTransform
 		if (g instanceof Round) {
 			return {
 				...r,
-				geometry: new Round(this.x + g.x, this.y + g.y, g.r, g.rv)
+				geometry: new Round(
+					this.x + g.x,
+					this.y + g.y,
+					g.r,
+					g.rv,
+					g.angle
+				)
 			};
 		}
 
 		if (g instanceof Multipoint) {
-			const ng = new Multipoint();
+			const ng = new Multipoint(undefined, g.angle);
 
 			return {
 				...r,

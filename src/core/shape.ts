@@ -76,9 +76,18 @@ export abstract class Shape<G extends IGeometry> implements IShape {
 	abstract drawGeometry(render: IRender, opt: DrawOptions): void;
 
 	draw(render: IRender, opt: DrawOptions): void {
+		render.save();
+
 		render.setStyle(this.style);
+		const geometry = this.geometry;
+
+		if (geometry.angle) {
+			render.rotate(geometry.center, geometry.angle);
+		}
+
 		this.drawGeometry(render, opt);
-		render.resetStyle();
+
+		render.restore();
 	}
 
 	fire(eventName: keyof EventTypes, e: IMouseSyntheticEvent): void {

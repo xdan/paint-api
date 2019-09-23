@@ -6,14 +6,22 @@ export class Round extends Geometry implements IRound {
 	y: number;
 	r: number;
 	rv: number;
+	angle: number;
 
-	constructor(x: number, y: number, r: number, rv: number = r) {
+	constructor(
+		x: number,
+		y: number,
+		r: number,
+		rv: number = r,
+		angle: number = 0
+	) {
 		super();
 
 		this.x = x;
 		this.y = y;
 		this.r = r;
 		this.rv = rv;
+		this.angle = angle;
 	}
 
 	get bound(): IBound {

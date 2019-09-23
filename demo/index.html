@@ -25,7 +25,7 @@
 	const
 		api = new PaintApi(),
 		{ Bitmap, Circle, Rectangle, Polyline, Text } = PaintApi.Shapes,
-		{ Translate, Scale, Opacity, StrokeWidth } = PaintApi.Transforms;
+		{ Translate, Scale, Opacity, StrokeWidth, Rotate } = PaintApi.Transforms;
 
 	let i = 0, image = new Image();
 	image.src = './mario.png';
@@ -33,17 +33,24 @@
 	api.state.layers = [];
 	api.state.layers.push(new PaintApi.Layer(api, [
 		new Bitmap(image, i + 1, i + 1, i + 100, i + 100),
-		new Circle(i + 100, i + 100, i + 10),
-		new Text('Mario', i + 100, i + 100, 100, 100),
-		new Rectangle(i, i, i + 10, i + 10),
-		new Polyline([
-			[110 + i, 20 + i],
-			[120, 50 + i],
-			[140 + i, 60 + i],
-			[170 + i, 90 + i],
-			[110 + i, 50 + i],
-		]),
+		// new Bitmap(image, i + 1, i + 1, i + 100, i + 100),
+		// new Circle(i + 100, i + 100, i + 10),
+		// new Text('Mario', i + 100, i + 100, 100, 100),
+		// new Rectangle(i, i, i + 10, i + 10),
+		// new Polyline([
+		// 	[110 + i, 20 + i],
+		// 	[120, 50 + i],
+		// 	[140 + i, 60 + i],
+		// 	[170 + i, 90 + i],
+		// 	[110 + i, 50 + i],
+		// ]),
 	]));
+
+	api.state.layers.forEach(layer => layer.shapes.forEach((shape, index) => {
+		if (!index) {
+			shape.transforms.push(new Rotate(45));
+		}
+	}));
 
 	function increaseWidth() {
 		const [active] = api.state.shapes.active;

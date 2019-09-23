@@ -7,7 +7,7 @@ import {
 	IMouseSyntheticEvent,
 	ITransform
 } from '../types';
-import { isInBound } from './helpers/';
+import { isInRotatedBound } from './helpers/';
 import { HANDLE_RADIUS } from '../const';
 import { IApi } from '../types/';
 import { Api } from './api';
@@ -65,7 +65,14 @@ export class Layer implements ILayer {
 
 	fire(eventName: keyof EventTypes, e: IMouseSyntheticEvent): void {
 		this.shapes.forEach(shape => {
-			if (isInBound(e, shape.bound, HANDLE_RADIUS)) {
+			if (
+				isInRotatedBound(
+					e,
+					shape.bound,
+					shape.geometry.angle,
+					HANDLE_RADIUS
+				)
+			) {
 				shape.fire(eventName, e);
 			}
 		});

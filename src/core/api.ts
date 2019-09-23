@@ -116,15 +116,21 @@ export class Api implements IApi {
 			start: IPoint = { x: 0, y: 0 };
 
 		this.events
-			.on('cornerMousedown', e => {
+			.on('corner.mousedown', e => {
+				console.log(e);
 				if (e.shape && e.corner) {
 					this.state.step = SceneSteps.scale;
 					this.state.shapes.active = [e.shape];
-					start = getOppositeCorner(e.shape.bound, e.corner);
+
+					start = getOppositeCorner(
+						e.shape.bound,
+						e.corner,
+						e.shape.geometry.angle
+					);
 					startBound = e.shape.bound;
 				}
 			})
-			.on('shapeMousedown', e => {
+			.on('shape.mousedown', e => {
 				if (e.shape) {
 					this.state.step = SceneSteps.drag;
 					this.state.shapes.active = [e.shape];
@@ -293,8 +299,6 @@ export class Api implements IApi {
 				x: cursor.x / zoom - offset[0],
 				y: cursor.y / zoom - offset[1]
 			};
-
-			console.log('gc', globalCursor.x);
 
 			this.state.zoom += e.deltaY * -0.01;
 

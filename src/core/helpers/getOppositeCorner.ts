@@ -1,6 +1,36 @@
 import { IBound, IPoint } from '../../types';
+import { findRectVertices, distance } from './isInBound';
 
-export const getOppositeCorner = (bound: IBound, corner: IPoint): IPoint => ({
-	x: Math.abs(corner.x - bound.x) < 1 ? corner.x + bound.w : bound.x,
-	y: Math.abs(corner.y - bound.y) < 1 ? corner.y + bound.h : bound.y
-});
+export const isSamePoint = (
+	a: IPoint,
+	b: IPoint,
+	tolerance: number = 0.01
+): boolean => distance(a, b) <= tolerance;
+
+export const getOppositeCorner = (
+	bound: IBound,
+	corner: IPoint,
+	angle: number
+): IPoint => {
+	const vertices = findRectVertices(bound, angle);
+
+	// tslint:disable-next-line:forin
+	for (const key in vertices) {
+		const cnr = (vertices as any)[key];
+
+		if (isSamePoint(cnr, corner)) {
+			switch (key) {
+				case 'LT':
+					return vertices.RB;
+				case 'RT':
+					return vertices.LB;
+				case 'LB':
+					return vertices.RT;
+				case 'RB':
+					return vertices.LT;
+			}
+		}
+	}
+
+	return corner;
+};

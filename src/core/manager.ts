@@ -9,9 +9,23 @@ import {
 	IRound,
 	IShape
 } from '../types';
-import { isOnLine, isInRound } from './helpers/';
+import { isOnLine, isInRound, findRectVertices, ucfirst } from './helpers/';
 import { HANDLE_RADIUS } from '../const';
-import { ucfirst } from './helpers/ucfirst';
+
+function getPerpOfLine(start: IPoint, end: IPoint): [IPoint, IPoint] {
+	const x = (start.x + end.x) / 2;
+	const y = (start.y + end.y) / 2;
+	const dx = (end.x - start.x) / 3;
+	const dy = (end.y - start.y) / 3;
+
+	return [
+		{ x, y },
+		{
+			x: x + dy,
+			y: y - dx
+		}
+	];
+}
 
 export class Manager implements IManager {
 	constructor(readonly shape: IShape) {}
@@ -37,61 +51,60 @@ export class Manager implements IManager {
 		})
 	};
 
-	private getBoundLines(bound: IBound): Array<[IPoint, IPoint]> {
+	private getBoundLines(
+		bound: IBound,
+		angle: number
+	): Array<[IPoint, IPoint]> {
+		const realBox = findRectVertices(bound, angle);
+
 		return [
-			[
-				{ x: bound.x + HANDLE_RADIUS, y: bound.y },
-				{ x: bound.x + bound.w - HANDLE_RADIUS, y: bound.y }
-			],
+			[realBox.LT, realBox.RT],
 
-			[
-				{ x: bound.x + bound.w, y: bound.y + HANDLE_RADIUS },
-				{ x: bound.x + bound.w, y: bound.y + bound.h - HANDLE_RADIUS }
-			],
+			[realBox.RT, realBox.RB],
 
-			[
-				{ x: bound.x + HANDLE_RADIUS, y: bound.y + bound.h },
-				{ x: bound.x + bound.w - HANDLE_RADIUS, y: bound.y + bound.h }
-			],
+			[realBox.LB, realBox.RB],
 
-			[
-				{ x: bound.x, y: bound.y + HANDLE_RADIUS },
-				{ x: bound.x, y: bound.y + bound.h - HANDLE_RADIUS }
-			]
+			[realBox.LT, realBox.LB],
+
+			getPerpOfLine(realBox.LT, realBox.RT)
 		];
 	}
 
-	private getCorners(bound: IBound): IRound[] {
+	private getCorners(bound: IBound, angle: number): IRound[] {
+		const realBox = findRectVertices(bound, angle);
+
 		return [
 			{
-				x: bound.x,
-				y: bound.y,
+				...realBox.LT,
 				r: HANDLE_RADIUS
 			},
 			{
-				x: bound.x + bound.w,
-				y: bound.y,
+				...realBox.RT,
 				r: HANDLE_RADIUS
 			},
 			{
-				x: bound.x + bound.w,
-				y: bound.y + bound.h,
+				...realBox.RB,
 				r: HANDLE_RADIUS
 			},
 			{
-				x: bound.x,
-				y: bound.y + bound.h,
+				...realBox.LB,
+				r: HANDLE_RADIUS
+			},
+			{
+				...getPerpOfLine(realBox.LT, realBox.RT)[1],
 				r: HANDLE_RADIUS
 			}
 		];
 	}
 
 	draw(render: IRender, cursor: IPoint): void {
+		render.save();
 		render.setStyle(this.styles.line);
 
-		const bound = this.shape.bound;
+		const geometry = this.shape.geometry,
+			bound = this.shape.bound;
 
-		const lines = this.getBoundLines(bound);
+		const lines = this.getBoundLines(bound, geometry.angle);
 
 		lines.forEach(line => {
 			render.setStyle(
@@ -101,7 +114,7 @@ export class Manager implements IManager {
 			render.drawLine(line[0], line[1]);
 		});
 
-		const corners = this.getCorners(bound);
+		const corners = this.getCorners(bound, geometry.angle);
 
 		corners.forEach(corner => {
 			render.setStyle(
@@ -113,29 +126,31 @@ export class Manager implements IManager {
 			render.drawCircle(corner, true);
 		});
 
-		render.resetStyle();
+		render.restore();
 	}
 
 	fire(eventName: keyof EventTypes, e: IMouseSyntheticEvent): void {
 		const bound = this.shape.bound;
 
-		const lines = this.getBoundLines(bound),
+		const geometry = this.shape.geometry,
+			lines = this.getBoundLines(bound, geometry.angle),
 			type = ucfirst(eventName.toString()),
 			es = { ...e, shape: this.shape };
 
-		e.api.events.fire('shape' + type, es);
+		e.api.events.fire('shape.' + type, es);
 
 		lines.forEach(line => {
 			if (isOnLine(e, line)) {
-				e.api.events.fire('border' + type, es, line);
+				e.api.events.fire('border.' + type, es, line);
 			}
 		});
 
-		const corners = this.getCorners(bound);
+		const corners = this.getCorners(bound, geometry.angle);
 
 		corners.forEach(corner => {
+			console.log(e, corner);
 			if (isInRound(e, corner)) {
-				e.api.events.fire('corner' + type, { ...es, corner });
+				e.api.events.fire('corner.' + type, { ...es, corner });
 			}
 		});
 	}

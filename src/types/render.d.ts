@@ -12,6 +12,7 @@ export interface IRender {
 	setStyle(style: IStyle): void;
 	resetStyle(): void;
 
+	drawPoint(point: IPoint): void;
 	drawImage(image: ImageSource, bound: IBound): void;
 
 	drawCircle(round: IRound, fill?: boolean): void;
@@ -25,6 +26,10 @@ export interface IRender {
 
 	drawText(point: IPoint, text: string): void;
 	measureText(text: string): IBound;
+
+	rotate(point: IPoint, angle: number): void;
+	save(): void;
+	restore(): void;
 }
 
 export interface DrawOptions {}

@@ -13,26 +13,30 @@ export class Eventer<T> implements IEventer<T> {
 	private listeners: ListenStore<T> = {};
 
 	on<K extends keyof EventTypes>(
-		event: K,
+		event: K & string,
 		callback: Handler<T, EventTypes[K]>
 	): Eventer<T> {
-		if (!this.listeners[event]) {
-			this.listeners[event] = [];
+		const eventName = event.toLowerCase();
+
+		if (!this.listeners[eventName]) {
+			this.listeners[eventName] = [];
 		}
 
-		this.listeners[event].push(callback);
+		this.listeners[eventName].push(callback);
 
 		return this;
 	}
 
 	fire<K extends keyof EventTypes>(
-		event: K,
+		event: K & string,
 		args: RequiredParamsList[K]
 	): Eventer<T> {
-		if (this.listeners[event]) {
-			this.listeners[event].forEach(callback =>
+		const eventName = event.toLowerCase();
+
+		if (this.listeners[eventName]) {
+			this.listeners[eventName].forEach(callback =>
 				callback.call(this.host, {
-					type: event,
+					type: eventName,
 					...args
 				})
 			);

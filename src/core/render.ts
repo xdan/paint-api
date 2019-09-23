@@ -32,6 +32,9 @@ export class Render implements IRender {
 	protected makeCanvas(width: number, height: number) {
 		const canvas = document.createElement('canvas');
 
+		canvas.style.userSelect = 'none';
+		canvas.style.touchAction = 'none';
+
 		if (!canvas) {
 			throw new Error('Canvas was not created');
 		}
@@ -74,6 +77,10 @@ export class Render implements IRender {
 
 	clear(): void {
 		this.context.clearRect(0, 0, this.state.width, this.state.height);
+	}
+
+	drawPoint(point: IPoint): void {
+		this.context.fillRect(point.x, point.y, 1, 1);
 	}
 
 	drawImage(image: ImageSource, bound: IBound): void {
@@ -169,10 +176,6 @@ export class Render implements IRender {
 	}
 
 	drawText({ x, y }: IPoint, text: string): void {
-		if (x < 0) {
-			x += this.state.width - this.measureText(text).w;
-		}
-
 		this.context.fillText(text, x, y);
 	}
 
@@ -206,5 +209,18 @@ export class Render implements IRender {
 
 	resetStyle(): void {
 		this.setStyle(this.defaultStyle);
+	}
+
+	rotate(point: IPoint, angle: number): void {
+		this.context.translate(point.x, point.y);
+		this.context.rotate((angle * Math.PI) / 180);
+		this.context.translate(-point.x, -point.y);
+	}
+
+	save(): void {
+		this.context.save();
+	}
+	restore(): void {
+		this.context.restore();
 	}
 }

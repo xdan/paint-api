@@ -20,9 +20,6 @@ export class Zoom extends BothTransform implements IBothTransform {
 		const style = r.style.clone();
 
 		style.font.size = r.style.font.size * zoom;
-		if (r.style.font.size > 30) {
-			console.log(style.font.toString());
-		}
 
 		const g = r.geometry;
 
@@ -31,13 +28,13 @@ export class Zoom extends BothTransform implements IBothTransform {
 				style,
 				geometry:
 					g instanceof Round
-						? new Round(g.x * zoom, g.y * zoom, g.r * zoom, g.rv * zoom)
-						: new Bound(g.x * zoom, g.y * zoom, g.w * zoom, g.h * zoom)
+						? new Round(g.x * zoom, g.y * zoom, g.r * zoom, g.rv * zoom, g.angle)
+						: new Bound(g.x * zoom, g.y * zoom, g.w * zoom, g.h * zoom, g.angle)
 			};
 		}
 
 		if (g instanceof Multipoint) {
-			const ng = new Multipoint();
+			const ng = new Multipoint(undefined, g.angle);
 
 			g.forEach(point => {
 				ng.push(new Point(point.x * zoom, point.y * zoom));

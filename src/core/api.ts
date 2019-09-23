@@ -16,6 +16,7 @@ import { Shape } from './shape';
 import { Geometry } from './geometry';
 import { Transform } from './transform';
 import {
+	angle,
 	distanceBetween,
 	getOppositeCorner,
 	isInBound,
@@ -24,7 +25,7 @@ import {
 import { IApi } from '../types/';
 import { Polyline } from '../shapes';
 import { Layer } from './layer';
-import { Scale, Translate, Zoom } from './transforms';
+import { Rotate, Scale, Translate, Zoom } from './transforms';
 import { Point } from './geometries';
 
 export class Api implements IApi {
@@ -117,16 +118,22 @@ export class Api implements IApi {
 
 		this.events
 			.on('corner.mousedown', e => {
-				console.log(e);
 				if (e.shape && e.corner) {
-					this.state.step = SceneSteps.scale;
 					this.state.shapes.active = [e.shape];
 
-					start = getOppositeCorner(
-						e.shape.bound,
-						e.corner,
-						e.shape.geometry.angle
-					);
+					if (e.corner.type !== 'CT') {
+						this.state.step = SceneSteps.scale;
+
+						start = getOppositeCorner(
+							e.shape.bound,
+							e.corner,
+							e.shape.geometry.angle
+						);
+					} else {
+						this.state.step = SceneSteps.rotate;
+						start = e.corner;
+					}
+
 					startBound = e.shape.bound;
 				}
 			})
@@ -144,9 +151,7 @@ export class Api implements IApi {
 				lastPoint = null;
 
 				if (this.state.mode === Modes.select) {
-					this.state.layers.forEach(layer =>
-						layer.fire('mouseup', e)
-					);
+					this.state.layers.forEach(layer => layer.fire(e.type, e));
 				}
 			})
 			.on('mousedown', e => {
@@ -159,10 +164,15 @@ export class Api implements IApi {
 					}
 
 					case Modes.select: {
+						const [active] = this.state.shapes.active;
 						this.state.shapes.active = [];
 
+						if (active) {
+							active.manager.checkEvent(e.type, e);
+						}
+
 						this.state.layers.forEach(layer =>
-							layer.fire('mousedown', e)
+							layer.fire(e.type, e)
 						);
 
 						if (!this.state.shapes.active.length) {
@@ -249,6 +259,24 @@ export class Api implements IApi {
 						transform.x = Math.abs(e.x - start.x) / startBound.w;
 
 						transform.y = Math.abs(e.y - start.y) / startBound.h;
+
+						break;
+
+					case SceneSteps.rotate:
+						const [active] = this.state.shapes.active,
+							geometry = active.geometry;
+
+						if (!transform) {
+							transform = new Rotate(geometry.angle);
+							active.transforms.push(transform);
+						}
+
+						(transform as Rotate).angle =
+							90 -
+							angle({
+								x: e.x - geometry.center.x,
+								y: -(e.y - geometry.center.y)
+							});
 
 						break;
 				}

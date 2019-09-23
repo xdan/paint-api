@@ -12,6 +12,7 @@
 </head>
 <body>
 	<div id="toolbar">
+		<button onclick="removeShape()" type="button">Remove</button>
 		<button onclick="api.setMode(PaintApi.MODE_SELECT)" type="button">Select</button>
 		<button onclick="api.setMode(PaintApi.MODE_DRAW)" type="button">Draw</button>
 		<button onclick="increaseWidth()" type="button">inc</button>
@@ -48,7 +49,7 @@
 
 	api.state.layers.forEach(layer => layer.shapes.forEach((shape, index) => {
 		if (!index) {
-			shape.transforms.push(new Rotate(45));
+			// shape.transforms.push(new Rotate(0));
 		}
 	}));
 
@@ -74,6 +75,12 @@
 		if (active) {
 			active.transforms.push(new Opacity(parseInt(opacity, 10) / 10));
 		}
+	}
+
+	function removeShape() {
+		const [shape] = api.state.shapes.active;
+		api.state.shapes.active = [];
+		shape && shape.layer && shape.layer.remove(shape);
 	}
 
 	// setInterval(() => {

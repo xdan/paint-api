@@ -14,5 +14,6 @@ export interface IManager {
 	};
 
 	draw(render: IRender, cursor: IPoint): void;
-	fire(eventName: keyof EventTypes, e: ISyntheticEvent): void;
+
+	checkEvent(eventName: keyof EventTypes, e: ISyntheticEvent): void;
 }

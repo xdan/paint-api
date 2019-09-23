@@ -73,6 +73,10 @@ export class Layer implements ILayer {
 					HANDLE_RADIUS
 				)
 			) {
+				const es = { ...e, shape };
+
+				e.api.events.fire('shape.' + eventName, es);
+
 				shape.fire(eventName, e);
 			}
 		});

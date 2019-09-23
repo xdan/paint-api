@@ -1,4 +1,4 @@
-import { IBound, IPoint } from '../../types';
+import { IBound, IBoundVertices, IPoint } from '../../types';
 
 export function isInBound(point: IPoint, box: IBound, tolerance: number = 0) {
 	return (
@@ -7,6 +7,21 @@ export function isInBound(point: IPoint, box: IBound, tolerance: number = 0) {
 		point.x <= box.x + box.w + tolerance &&
 		point.y <= box.y + box.h + tolerance
 	);
+}
+
+export function getPerpOfLine(start: IPoint, end: IPoint): [IPoint, IPoint] {
+	const x = (start.x + end.x) / 2;
+	const y = (start.y + end.y) / 2;
+	const dx = (end.x - start.x) / 3;
+	const dy = (end.y - start.y) / 3;
+
+	return [
+		{ x, y },
+		{
+			x: x + dy,
+			y: y - dx
+		}
+	];
 }
 
 /**
@@ -51,7 +66,10 @@ function rotatePoint(
  * @param degrees Degrees rotated around center
  * @return {Object} Arrays LT, RT, RB, LB [X,Y]
  */
-export function findRectVertices(bound: IBound, degrees: number) {
+export function findRectVertices(
+	bound: IBound,
+	degrees: number
+): IBoundVertices {
 	const left = bound.x;
 	const right = bound.x + bound.w;
 	const top = bound.y;
@@ -59,16 +77,20 @@ export function findRectVertices(bound: IBound, degrees: number) {
 
 	const center = { x: left + bound.w / 2, y: top + bound.h / 2 };
 
-	const LT = { x: left, y: top };
-	const RT = { x: right, y: top };
-	const RB = { x: right, y: bottom };
-	const LB = { x: left, y: bottom };
+	const LTN = { x: left, y: top };
+	const RTN = { x: right, y: top };
+	const RBN = { x: right, y: bottom };
+	const LBN = { x: left, y: bottom };
+
+	const LT = rotatePoint(LTN, center, degrees);
+	const RT = rotatePoint(RTN, center, degrees);
 
 	return {
-		LT: rotatePoint(LT, center, degrees),
-		RT: rotatePoint(RT, center, degrees),
-		RB: rotatePoint(RB, center, degrees),
-		LB: rotatePoint(LB, center, degrees)
+		LT,
+		RT,
+		RB: rotatePoint(RBN, center, degrees),
+		LB: rotatePoint(LBN, center, degrees),
+		CT: getPerpOfLine(LT, RT)[1]
 	};
 }
 
@@ -151,3 +173,7 @@ export function isInRotatedBound(
 
 	return Math.abs(triArea - rectArea) < 0.01;
 }
+
+export const angle = (p: IPoint): number => {
+	return (Math.atan2(p.y, p.x) * 180) / Math.PI;
+};

@@ -2,6 +2,7 @@ import { Style } from './style';
 import {
 	EventTypes,
 	IBound,
+	ICorner,
 	IManager,
 	IMouseSyntheticEvent,
 	IPoint,
@@ -9,23 +10,15 @@ import {
 	IRound,
 	IShape
 } from '../types';
-import { isOnLine, isInRound, findRectVertices, ucfirst } from './helpers/';
+
+import {
+	isOnLine,
+	isInRound,
+	findRectVertices,
+	getPerpOfLine
+} from './helpers/';
+
 import { HANDLE_RADIUS } from '../const';
-
-function getPerpOfLine(start: IPoint, end: IPoint): [IPoint, IPoint] {
-	const x = (start.x + end.x) / 2;
-	const y = (start.y + end.y) / 2;
-	const dx = (end.x - start.x) / 3;
-	const dy = (end.y - start.y) / 3;
-
-	return [
-		{ x, y },
-		{
-			x: x + dy,
-			y: y - dx
-		}
-	];
-}
 
 export class Manager implements IManager {
 	constructor(readonly shape: IShape) {}
@@ -70,28 +63,39 @@ export class Manager implements IManager {
 		];
 	}
 
-	private getCorners(bound: IBound, angle: number): IRound[] {
+	private getHandles(bound: IBound, angle: number): Array<IRound & ICorner> {
 		const realBox = findRectVertices(bound, angle);
 
 		return [
 			{
+				type: 'LT',
 				...realBox.LT,
 				r: HANDLE_RADIUS
 			},
 			{
+				type: 'RT',
 				...realBox.RT,
 				r: HANDLE_RADIUS
 			},
 			{
+				type: 'RB',
 				...realBox.RB,
 				r: HANDLE_RADIUS
 			},
 			{
+				type: 'LB',
 				...realBox.LB,
 				r: HANDLE_RADIUS
 			},
 			{
-				...getPerpOfLine(realBox.LT, realBox.RT)[1],
+				type: 'CT',
+				...realBox.CT,
+				r: HANDLE_RADIUS
+			},
+			{
+				type: 'CT',
+				x: bound.x + bound.w / 2,
+				y: bound.y + bound.h / 2,
 				r: HANDLE_RADIUS
 			}
 		];
@@ -114,7 +118,7 @@ export class Manager implements IManager {
 			render.drawLine(line[0], line[1]);
 		});
 
-		const corners = this.getCorners(bound, geometry.angle);
+		const corners = this.getHandles(bound, geometry.angle);
 
 		corners.forEach(corner => {
 			render.setStyle(
@@ -129,28 +133,20 @@ export class Manager implements IManager {
 		render.restore();
 	}
 
-	fire(eventName: keyof EventTypes, e: IMouseSyntheticEvent): void {
+	checkEvent(eventName: keyof EventTypes, e: IMouseSyntheticEvent): void {
 		const bound = this.shape.bound;
+		const geometry = this.shape.geometry;
+		const es = { ...e, shape: this.shape };
 
-		const geometry = this.shape.geometry,
-			lines = this.getBoundLines(bound, geometry.angle),
-			type = ucfirst(eventName.toString()),
-			es = { ...e, shape: this.shape };
-
-		e.api.events.fire('shape.' + type, es);
-
-		lines.forEach(line => {
+		this.getBoundLines(bound, geometry.angle).forEach(line => {
 			if (isOnLine(e, line)) {
-				e.api.events.fire('border.' + type, es, line);
+				e.api.events.fire('border.' + eventName, es, line);
 			}
 		});
 
-		const corners = this.getCorners(bound, geometry.angle);
-
-		corners.forEach(corner => {
-			console.log(e, corner);
+		this.getHandles(bound, geometry.angle).forEach(corner => {
 			if (isInRound(e, corner)) {
-				e.api.events.fire('corner.' + type, { ...es, corner });
+				e.api.events.fire('corner.' + eventName, { ...es, corner });
 			}
 		});
 	}

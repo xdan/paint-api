@@ -11,16 +11,12 @@ export class Rotate extends GeometryTransform implements IGeometryTransform {
 	}
 
 	apply(r: IShapeRecord): IShapeRecord {
-		if (this.angle) {
-			const geometry = r.geometry.clone();
-			geometry.angle = this.angle;
+		const geometry = r.geometry.clone();
+		geometry.angle = this.angle;
 
-			return {
-				...r,
-				geometry
-			};
-		}
-
-		return r;
+		return {
+			...r,
+			geometry
+		};
 	}
 }

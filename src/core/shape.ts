@@ -91,6 +91,6 @@ export abstract class Shape<G extends IGeometry> implements IShape {
 	}
 
 	fire(eventName: keyof EventTypes, e: IMouseSyntheticEvent): void {
-		this.manager.fire(eventName, e);
+		this.manager.checkEvent(eventName, e);
 	}
 }

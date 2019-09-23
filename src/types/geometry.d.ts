@@ -11,6 +11,20 @@ export interface IPoint {
 	y: number;
 }
 
+export interface IBoundVertices {
+	LT: IPoint;
+	RT: IPoint;
+	RB: IPoint;
+	LB: IPoint;
+	CT: IPoint;
+}
+
+export type CornerType = keyof IBoundVertices;
+
+export interface ICorner extends IPoint {
+	type: CornerType;
+}
+
 export interface IRound extends IPoint {
 	r: number;
 	rv?: number;

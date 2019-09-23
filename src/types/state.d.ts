@@ -8,6 +8,7 @@ export const enum SceneSteps {
 	drag,
 	dragMap,
 	scale,
+	rotate,
 	draw
 }
 

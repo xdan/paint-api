@@ -1,4 +1,4 @@
-import { IPoint } from './geometry';
+import { ICorner, IPoint } from './geometry';
 import { IApi } from './api';
 import { IShape } from './shape';
 
@@ -6,7 +6,7 @@ export interface ISyntheticEvent {
 	type: keyof EventTypes;
 	api: IApi;
 	shape?: IShape;
-	corner?: IPoint;
+	corner?: ICorner;
 }
 
 export interface IMouseSyntheticEvent extends ISyntheticEvent, IPoint {}
